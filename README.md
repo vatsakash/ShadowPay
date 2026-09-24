@@ -115,7 +115,7 @@ Using Midnight's shielded smart contract execution:
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/rahul7686/ShadowPay.git
+git clone https://github.com/vatsakash/ShadowPay.git
 cd ShadowPay
 
 # 2. Install project dependencies
@@ -177,8 +177,8 @@ Automated CI/CD is configured via GitHub Actions in [`.github/workflows/ci.yml`]
 4. Executes the Vitest unit and privacy test suite (`npm test`).
 5. Compiles production web bundle (`npm run build`).
 
-- **Workflow Status**: [![CI/CD Pipeline](https://github.com/rahul7686/ShadowPay/actions/workflows/ci.yml/badge.svg)](https://github.com/rahul7686/ShadowPay/actions/workflows/ci.yml)
-- **Pipeline Workflow**: [View All CI Runs](https://github.com/rahul7686/ShadowPay/actions/workflows/ci.yml)
+- **Workflow Status**: [![CI/CD Pipeline](https://github.com/vatsakash/ShadowPay/actions/workflows/ci.yml/badge.svg)](https://github.com/vatsakash/ShadowPay/actions/workflows/ci.yml)
+- **Pipeline Workflow**: [View All CI Runs](https://github.com/vatsakash/ShadowPay/actions/workflows/ci.yml)
 
 ---
 
