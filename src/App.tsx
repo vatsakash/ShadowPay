@@ -10,14 +10,29 @@ import { CircuitLogsModal } from './components/CircuitLogsModal';
 
 import { ShadowPayEngine } from './midnight/ShadowPaySimulator';
 import { MidnightDAppConnector, MidnightWalletState } from './midnight/dappConnector';
+import { setNetworkId } from './midnight/midnight1am';
 import { PayrollLedgerState, RecipientSplitRule, ZKProofLog } from './midnight/types';
-import { Shield, Github, Twitter, ExternalLink, RefreshCw } from 'lucide-react';
+import { Shield, Github, Twitter, ExternalLink } from 'lucide-react';
 
 export default function App() {
   const engine = ShadowPayEngine.getInstance();
   const connector = MidnightDAppConnector.getInstance();
 
-  const [activeTab, setActiveTab] = useState<string>('admin');
+  // Detect route from URL (/deploy or #deploy)
+  const getInitialTab = (): string => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname.toLowerCase();
+      const hash = window.location.hash.toLowerCase();
+      if (path.includes('/deploy') || hash === '#deploy') return 'deploy';
+      if (path.includes('/claim') || hash === '#claim') return 'claim';
+      if (path.includes('/audit') || hash === '#audit') return 'audit';
+      if (path.includes('/explorer') || hash === '#explorer') return 'explorer';
+      if (path.includes('/docs') || hash === '#docs') return 'docs';
+    }
+    return 'admin';
+  };
+
+  const [activeTab, setActiveTabState] = useState<string>(getInitialTab());
   const [ledgerState, setLedgerState] = useState<PayrollLedgerState>(engine.getLedgerState());
   const [splits, setSplits] = useState<RecipientSplitRule[]>(engine.getPrivateSplits());
   const [proofLogs, setProofLogs] = useState<ZKProofLog[]>(engine.getProofLogs());
@@ -25,11 +40,31 @@ export default function App() {
   const [isLogsModalOpen, setIsLogsModalOpen] = useState<boolean>(false);
   const [selectedReceiptSplitId, setSelectedReceiptSplitId] = useState<string>('');
 
+  const setActiveTab = (tab: string) => {
+    setActiveTabState(tab);
+    if (typeof window !== 'undefined') {
+      const targetUrl = tab === 'admin' ? '/' : `/${tab}`;
+      window.history.pushState(null, '', targetUrl);
+    }
+  };
+
   useEffect(() => {
+    // Requirement: Set Midnight network ID explicitly before any wallet or contract operation
+    setNetworkId('preprod');
+
+    const handlePopState = () => {
+      setActiveTabState(getInitialTab());
+    };
+    window.addEventListener('popstate', handlePopState);
+
     const unsubscribe = connector.subscribe((state) => {
       setWalletState(state);
     });
-    return () => unsubscribe();
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      unsubscribe();
+    };
   }, [connector]);
 
   const handleRefresh = () => {
@@ -38,7 +73,7 @@ export default function App() {
     setProofLogs(engine.getProofLogs());
   };
 
-  const handleProofGenerated = (proof: ZKProofLog) => {
+  const handleProofGenerated = (_proof: ZKProofLog) => {
     handleRefresh();
   };
 

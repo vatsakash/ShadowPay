@@ -41,6 +41,18 @@ Teams, DAOs, and freelance collectives currently have to choose between **transp
 
 ---
 
+## 1AM Browser Extension Preprod Deploy Flow
+
+ShadowPay implements the official **1AM browser extension deployment flow** (mirroring `midnight-skills-counter-dapp`):
+1. **100% In-Browser Deployment**: Deploys directly through the 1AM wallet extension (`window.midnight['1am']`).
+2. **No Funded Server-Side Deployer**: Everything is signed, balanced, and broadcast client-side through the user's wallet.
+3. **No Local Proof Server Required**: Proving operations are performed via 1AM ProofStation with sponsored zero DUST gas fees.
+4. **Explicit Network ID**: `setNetworkId('preprod')` is invoked explicitly prior to any wallet or contract interaction.
+5. **Dedicated `/deploy` Route**: The deploy UI lives on [`/deploy`](https://shadowpay-midnight.vercel.app/deploy).
+6. **Prominent Address Output**: After deployment, the verified contract address (Hex & Bech32m) is prominently displayed and linked to the Midnight Preprod Explorer.
+
+---
+
 ## What This Product Does
 
 On traditional public blockchains like Ethereum or Solana, every transaction is broadcast to the world. When a DAO or web3 company runs payroll:

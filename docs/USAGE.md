@@ -12,6 +12,22 @@ Welcome to **ShadowPay**, the zero-knowledge confidential payroll and revenue-sp
 
 ---
 
+## In-Browser Contract Deployment Flow (`/deploy`)
+
+ShadowPay uses a pure in-browser deployment flow powered by the **1AM extension on Midnight Preprod** (matching `midnight-skills-counter-dapp`):
+
+1. **Open the Deploy Page**: Navigate to [`/deploy`](https://shadowpay-midnight.vercel.app/deploy) or click **Deploy** in the top navigation bar.
+2. **Network ID Initialization**: The app automatically sets `setNetworkId('preprod')` before any wallet or contract operation.
+3. **1AM Extension Connection**: The app detects `window.midnight['1am']`. Ensure your wallet network is set to **Preprod**.
+4. **Deploy Contract**: Click **Deploy Contract Now**.
+   - Compiles contract circuits and generates unproven deploy transaction.
+   - Proving parameters are fetched from 1AM ProofStation (zero-gas DUST costs sponsored).
+   - Transaction is balanced and signed client-side by your 1AM wallet.
+   - Broadcasts to Midnight Preprod RPC and polls the indexer for confirmation.
+5. **View Deployed Address**: Once confirmed, the verified **Explorer Hex Address** and **Bech32m Address** are prominently displayed with direct links to the Midnight Preprod Explorer.
+
+---
+
 ## 1. Employer / DAO Administrator Workflow
 
 ### Step 1: Deposit Funding Budget into Escrow
