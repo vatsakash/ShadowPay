@@ -203,12 +203,51 @@ export async function createConnectedSession(
     },
   };
 
+function createPatchedPublicDataProvider(queryUrl: string, _subscriptionUrl: string) {
+  async function queryLatest(query: string, address: string) {
+    try {
+      const res = await fetch(queryUrl, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ query, variables: { address } }),
+      });
+      if (!res.ok) return null;
+      const payload = await res.json();
+      if (payload.errors?.length) return null;
+      return payload.data?.contractAction ?? null;
+    } catch {
+      return null;
+    }
+  }
+
+  return {
+    async queryContractState(contractAddress: string) {
+      const action = await queryLatest(`
+        query LATEST_CONTRACT_STATE($address: HexEncoded!) {
+          contractAction(address: $address) { state }
+        }`, contractAddress);
+      return action ? action.state : null;
+    },
+    async queryZSwapAndContractState(contractAddress: string) {
+      const action = await queryLatest(`
+        query LATEST_BOTH_STATE($address: HexEncoded!) {
+          contractAction(address: $address) {
+            state
+            zswapState
+            transaction { block { ledgerParameters } }
+          }
+        }`, contractAddress);
+      return action;
+    },
+  };
+}
+
   return {
     api,
     config,
     providers: {
       privateStateProvider: createPrivateStateProvider(),
-      publicDataProvider: null,
+      publicDataProvider: createPatchedPublicDataProvider(config.indexerUri, config.indexerWsUri),
       zkConfigProvider: { baseUrl: zkAssetBasePath },
       proofProvider,
       walletProvider,
