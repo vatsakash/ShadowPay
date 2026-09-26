@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Wallet,
   ShieldCheck,
@@ -19,6 +19,7 @@ import {
   ZKProofLog
 } from '../midnight/types';
 import { ShadowPayEngine } from '../midnight/ShadowPaySimulator';
+import { MidnightDAppConnector, MidnightWalletState } from '../midnight/dappConnector';
 
 interface RecipientClaimProps {
   ledgerState: PayrollLedgerState;
@@ -36,6 +37,15 @@ export const RecipientClaim: React.FC<RecipientClaimProps> = ({
   onSelectReceipt,
 }) => {
   const engine = ShadowPayEngine.getInstance();
+  const connector = MidnightDAppConnector.getInstance();
+  const [walletState, setWalletState] = useState<MidnightWalletState>(connector.getState());
+
+  useEffect(() => {
+    const unsub = connector.subscribe((state) => {
+      setWalletState(state);
+    });
+    return unsub;
+  }, [connector]);
 
   const [selectedSplitId, setSelectedSplitId] = useState<string>(splits[0]?.id || '');
   const [customSecret, setCustomSecret] = useState<string>('');
@@ -53,12 +63,31 @@ export const RecipientClaim: React.FC<RecipientClaimProps> = ({
     setIsClaiming(true);
 
     try {
+      // Ensure 1AM wallet connection
+      if (!connector.getState().isConnected) {
+        await connector.connect();
+      }
+
       const secretToUse = useCustomSecret ? customSecret : selectedSplit.secretKey;
-      const proof = await engine.claimPrivatePayout(selectedSplit.id, secretToUse);
+      const txPayload = `0x04${selectedSplit.nullifier.slice(2)}`;
+      let txHash: string | undefined;
+      let used1AM = false;
+
+      try {
+        const txResult = await connector.executeOnChainTransaction(txPayload);
+        txHash = txResult.txHash;
+        used1AM = txResult.via1AM;
+      } catch (walletErr: any) {
+        throw new Error(walletErr?.message || 'Claim transaction rejected in 1AM wallet');
+      }
+
+      const proof = await engine.claimPrivatePayout(selectedSplit.id, secretToUse, txHash);
 
       onProofGenerated(proof);
       setSuccessMessage(
-        `Confidential payout unlocked! ${selectedSplit.salaryAmount.toLocaleString()} tNIGHT claimed to your wallet.`
+        used1AM
+          ? `Confidential payout unlocked and confirmed via 1AM Preprod! ${selectedSplit.salaryAmount.toLocaleString()} tNIGHT claimed to your wallet. (Tx: ${txHash.slice(0, 18)}...)`
+          : `Confidential payout unlocked! ${selectedSplit.salaryAmount.toLocaleString()} tNIGHT claimed to your wallet.`
       );
       onRefresh();
     } catch (err: unknown) {
@@ -97,6 +126,50 @@ export const RecipientClaim: React.FC<RecipientClaimProps> = ({
             </div>
           </div>
         </div>
+      </div>
+
+      {/* 1AM Wallet Status Banner */}
+      <div className={`rounded-xl border p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs ${
+        walletState.isReal1AM
+          ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+          : walletState.isInstalled
+          ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-300'
+          : 'bg-amber-500/10 border-amber-500/30 text-amber-300'
+      }`}>
+        <div className="flex items-center gap-2">
+          {walletState.isReal1AM ? (
+            <>
+              <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+              <span>
+                <strong>1AM Extension Connected (Preprod)</strong>: Claim transactions will prompt hardware/extension approval popup in 1AM.
+              </span>
+            </>
+          ) : walletState.isInstalled ? (
+            <>
+              <Wallet className="h-4 w-4 text-cyan-400 shrink-0" />
+              <span>
+                <strong>1AM Extension Ready</strong>: Connect to sign and balance confidential claims via 1AM.
+              </span>
+            </>
+          ) : (
+            <>
+              <AlertCircle className="h-4 w-4 text-amber-400 shrink-0" />
+              <span>
+                <strong>1AM Extension Not Detected</strong>: Running in interactive Preprod simulation mode. Install <a href="https://1am.xyz" target="_blank" rel="noopener noreferrer" className="underline font-semibold hover:text-white">1AM Extension</a> for live browser signing.
+              </span>
+            </>
+          )}
+        </div>
+
+        {!walletState.isConnected && (
+          <button
+            type="button"
+            onClick={() => connector.connect()}
+            className="self-start sm:self-auto rounded-lg bg-cyan-500/20 border border-cyan-500/40 px-3 py-1 font-semibold text-cyan-300 hover:bg-cyan-500/30 transition-all shrink-0"
+          >
+            Connect 1AM
+          </button>
+        )}
       </div>
 
       {/* Messages */}
@@ -280,12 +353,12 @@ export const RecipientClaim: React.FC<RecipientClaimProps> = ({
                     {isClaiming ? (
                       <>
                         <RefreshCw className="h-4 w-4 animate-spin" />
-                        <span>Generating Zero-Knowledge Witness Claim Proof...</span>
+                        <span>Signing & Claiming via 1AM...</span>
                       </>
                     ) : (
                       <>
                         <Wallet className="h-4 w-4" />
-                        <span>Claim Private Payout ({selectedSplit.salaryAmount.toLocaleString()} tNIGHT)</span>
+                        <span>Claim Private Payout (via 1AM - {selectedSplit.salaryAmount.toLocaleString()} tNIGHT)</span>
                       </>
                     )}
                   </button>

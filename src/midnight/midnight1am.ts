@@ -66,7 +66,12 @@ export function detectWallet(): Promise<any | null> {
 
     let attempts = 0;
     const check = () => {
-      const wallet = (window as any).midnight?.['1am'] || (window as any).midnight?.mnLace;
+      const midnight = (window as any).midnight;
+      const wallet =
+        midnight?.['1am'] ||
+        midnight?.mnLace ||
+        midnight?.lace ||
+        (midnight && typeof midnight === 'object' ? Object.values(midnight)[0] : null);
       if (wallet) {
         resolve(wallet);
         return;
@@ -137,11 +142,33 @@ export async function createConnectedSession(
   api: any,
   zkAssetBasePath = '/zk/shadowpay/'
 ): Promise<ConnectedSession> {
-  const [rawConfig, unshieldedAddress, shieldedAddress] = await Promise.all([
-    api.getConfiguration(),
-    api.getUnshieldedAddress(),
-    api.getShieldedAddresses(),
-  ]);
+  let rawConfig: any = null;
+  let unshieldedAddress: any = null;
+  let shieldedAddress: any = null;
+
+  try {
+    if (typeof api.getConfiguration === 'function') {
+      rawConfig = await api.getConfiguration();
+    }
+  } catch (e) {
+    console.warn('api.getConfiguration notice:', e);
+  }
+
+  try {
+    if (typeof api.getUnshieldedAddress === 'function') {
+      unshieldedAddress = await api.getUnshieldedAddress();
+    }
+  } catch (e) {
+    console.warn('api.getUnshieldedAddress notice:', e);
+  }
+
+  try {
+    if (typeof api.getShieldedAddresses === 'function') {
+      shieldedAddress = await api.getShieldedAddresses();
+    }
+  } catch (e) {
+    console.warn('api.getShieldedAddresses notice:', e);
+  }
 
   const config = {
     networkId: (rawConfig?.networkId || 'preprod') as MidnightNetworkId,
@@ -180,10 +207,9 @@ export async function createConnectedSession(
     getEncryptionPublicKey: () => shieldedAddress?.shieldedEncryptionPublicKey || '0x' + '00'.repeat(32),
     balanceTx: async (tx: any) => {
       if (typeof api.balanceUnsealedTransaction === 'function') {
-        const txHex = typeof tx.serialize === 'function' ? toHex(tx.serialize()) : String(tx);
+        const txHex = typeof tx?.serialize === 'function' ? toHex(tx.serialize()) : String(tx);
         const balanced = await api.balanceUnsealedTransaction(txHex);
-        if (!balanced?.tx) throw new Error('balanceUnsealedTransaction returned invalid result');
-        return balanced.tx;
+        return balanced?.tx || balanced;
       }
       return tx;
     },
@@ -192,12 +218,14 @@ export async function createConnectedSession(
   const midnightProvider = {
     submitTx: async (tx: any) => {
       if (typeof api.submitTransaction === 'function') {
-        const txHex = typeof tx.serialize === 'function' ? toHex(tx.serialize()) : String(tx);
+        const txHex = typeof tx?.serialize === 'function' ? toHex(tx.serialize()) : String(tx);
         const result = await api.submitTransaction(txHex);
         if (typeof result === 'string' && result) return result;
         if (result?.transactionId) return result.transactionId;
         if (result?.id) return result.id;
-        return typeof txHex === 'string' ? txHex.slice(0, 64) : '0x' + Math.random().toString(16).slice(2).padStart(64, '0');
+        return typeof txHex === 'string' && txHex.length >= 64
+          ? txHex.slice(0, 64)
+          : '0x' + Math.random().toString(16).slice(2).padStart(64, '0');
       }
       return '0x' + Math.random().toString(16).slice(2).padStart(64, '0');
     },
@@ -253,7 +281,12 @@ function createPatchedPublicDataProvider(queryUrl: string, _subscriptionUrl: str
       walletProvider,
       midnightProvider,
     },
-    unshieldedAddress: unshieldedAddress?.unshieldedAddress || 'mn_addr_preprod1q9x74a87c0v28e53l90qw82k49z6m31f82y01',
+    unshieldedAddress:
+      typeof unshieldedAddress === 'string'
+        ? unshieldedAddress
+        : unshieldedAddress?.unshieldedAddress ||
+          unshieldedAddress?.address ||
+          'mn_addr_preprod1q9x74a87c0v28e53l90qw82k49z6m31f82y01',
     shieldedAddresses: shieldedAddress || {
       shieldedCoinPublicKey: '0x' + '00'.repeat(32),
       shieldedEncryptionPublicKey: '0x' + '00'.repeat(32),

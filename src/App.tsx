@@ -52,6 +52,9 @@ export default function App() {
     // Requirement: Set Midnight network ID explicitly before any wallet or contract operation
     setNetworkId('preprod');
 
+    // Poll/detect wallet presence on startup
+    connector.checkWalletAvailability();
+
     const handlePopState = () => {
       setActiveTabState(getInitialTab());
     };

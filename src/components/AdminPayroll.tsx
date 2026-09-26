@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Shield,
   Plus,
@@ -14,7 +14,8 @@ import {
   Hash,
   Sparkles,
   RefreshCw,
-  Scale
+  Scale,
+  Wallet
 } from 'lucide-react';
 import {
   PayrollLedgerState,
@@ -22,6 +23,7 @@ import {
   ZKProofLog
 } from '../midnight/types';
 import { ShadowPayEngine } from '../midnight/ShadowPaySimulator';
+import { MidnightDAppConnector, MidnightWalletState } from '../midnight/dappConnector';
 
 interface AdminPayrollProps {
   ledgerState: PayrollLedgerState;
@@ -37,6 +39,15 @@ export const AdminPayroll: React.FC<AdminPayrollProps> = ({
   onProofGenerated,
 }) => {
   const engine = ShadowPayEngine.getInstance();
+  const connector = MidnightDAppConnector.getInstance();
+  const [walletState, setWalletState] = useState<MidnightWalletState>(connector.getState());
+
+  useEffect(() => {
+    const unsub = connector.subscribe((state) => {
+      setWalletState(state);
+    });
+    return unsub;
+  }, [connector]);
 
   // Local form state for new split
   const [name, setName] = useState('');
@@ -65,7 +76,7 @@ export const AdminPayroll: React.FC<AdminPayrollProps> = ({
     setMinFloor(defaultFloor.toString());
   };
 
-  // Deposit budget handler
+  // Deposit budget handler through 1AM
   const handleDepositBudget = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
@@ -78,9 +89,33 @@ export const AdminPayroll: React.FC<AdminPayrollProps> = ({
         throw new Error('Deposit budget must be greater than zero');
       }
 
-      const proof = await engine.depositPayrollBudget(ledgerState.adminPk, budgetBigInt);
+      // Ensure 1AM connection before transaction
+      if (!connector.getState().isConnected) {
+        await connector.connect();
+      }
+
+      // Balance & submit transaction through 1AM extension (triggers approval popup)
+      const txPayload = `0x01${budgetBigInt.toString(16).padStart(16, '0')}`;
+      let txHash: string | undefined;
+      let used1AM = false;
+
+      try {
+        const txResult = await connector.executeOnChainTransaction(txPayload);
+        txHash = txResult.txHash;
+        used1AM = txResult.via1AM;
+      } catch (walletErr: any) {
+        throw new Error(walletErr?.message || 'Transaction was rejected in 1AM wallet');
+      }
+
+      const adminAddress = connector.getState().address || ledgerState.adminPk;
+      const proof = await engine.depositPayrollBudget(adminAddress, budgetBigInt, txHash);
       onProofGenerated(proof);
-      setSuccessMessage(`Successfully funded escrow with ${depositAmount} tNIGHT on Midnight Preprod!`);
+
+      setSuccessMessage(
+        used1AM
+          ? `Successfully funded escrow with ${depositAmount} tNIGHT via 1AM Preprod! (Tx: ${txHash.slice(0, 18)}...)`
+          : `Successfully funded escrow with ${depositAmount} tNIGHT on Midnight Preprod! (Tx: ${proof.txHash.slice(0, 18)}...)`
+      );
       onRefresh();
     } catch (err: unknown) {
       setErrorMessage(err instanceof Error ? err.message : 'Failed to deposit budget');
@@ -127,16 +162,38 @@ export const AdminPayroll: React.FC<AdminPayrollProps> = ({
     }
   };
 
-  // Finalize settlement batch
+  // Finalize settlement batch through 1AM
   const handleFinalizeBatch = async () => {
     setErrorMessage(null);
     setSuccessMessage(null);
     setIsFinalizing(true);
 
     try {
-      const proof = await engine.finalizeSettlementBatch();
+      // Ensure 1AM connection before batch settlement transaction
+      if (!connector.getState().isConnected) {
+        await connector.connect();
+      }
+
+      const txPayload = `0x03${ledgerState.batchHash.slice(2)}`;
+      let txHash: string | undefined;
+      let used1AM = false;
+
+      try {
+        const txResult = await connector.executeOnChainTransaction(txPayload);
+        txHash = txResult.txHash;
+        used1AM = txResult.via1AM;
+      } catch (walletErr: any) {
+        throw new Error(walletErr?.message || 'Finalization batch transaction rejected in 1AM');
+      }
+
+      const proof = await engine.finalizeSettlementBatch(txHash);
       onProofGenerated(proof);
-      setSuccessMessage('ZK Proof generated! Settlement batch finalized and verified on Midnight Preprod.');
+
+      setSuccessMessage(
+        used1AM
+          ? `ZK Proof generated and settlement batch confirmed via 1AM Preprod! (Tx: ${txHash.slice(0, 18)}...)`
+          : 'ZK Proof generated! Settlement batch finalized and verified on Midnight Preprod.'
+      );
       onRefresh();
     } catch (err: unknown) {
       setErrorMessage(err instanceof Error ? err.message : 'Failed to finalize batch');
@@ -150,6 +207,49 @@ export const AdminPayroll: React.FC<AdminPayrollProps> = ({
 
   return (
     <div className="space-y-6">
+      {/* 1AM Wallet Connection Status Banner */}
+      <div className={`rounded-xl border p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs ${
+        walletState.isReal1AM
+          ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+          : walletState.isInstalled
+          ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-300'
+          : 'bg-amber-500/10 border-amber-500/30 text-amber-300'
+      }`}>
+        <div className="flex items-center gap-2">
+          {walletState.isReal1AM ? (
+            <>
+              <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+              <span>
+                <strong>1AM Extension Connected (Preprod)</strong>: All transactions will trigger hardware/extension approval popup in 1AM.
+              </span>
+            </>
+          ) : walletState.isInstalled ? (
+            <>
+              <Wallet className="h-4 w-4 text-cyan-400 shrink-0" />
+              <span>
+                <strong>1AM Extension Ready</strong>: Connect to sign and balance transactions natively with your 1AM wallet.
+              </span>
+            </>
+          ) : (
+            <>
+              <AlertCircle className="h-4 w-4 text-amber-400 shrink-0" />
+              <span>
+                <strong>1AM Extension Not Detected</strong>: Running in interactive Preprod simulation mode. Install <a href="https://1am.xyz" target="_blank" rel="noopener noreferrer" className="underline font-semibold hover:text-white">1AM Extension</a> for live browser signing.
+              </span>
+            </>
+          )}
+        </div>
+
+        {!walletState.isConnected && (
+          <button
+            type="button"
+            onClick={() => connector.connect()}
+            className="self-start sm:self-auto rounded-lg bg-cyan-500/20 border border-cyan-500/40 px-3 py-1 font-semibold text-cyan-300 hover:bg-cyan-500/30 transition-all shrink-0"
+          >
+            Connect 1AM
+          </button>
+        )}
+      </div>
       {/* Overview Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {/* Total Funded Budget */}
@@ -309,12 +409,12 @@ export const AdminPayroll: React.FC<AdminPayrollProps> = ({
                 {isDepositing ? (
                   <>
                     <RefreshCw className="h-4 w-4 animate-spin" />
-                    <span>Broadcasting Deposit...</span>
+                    <span>Signing & Balancing via 1AM...</span>
                   </>
                 ) : (
                   <>
                     <Coins className="h-4 w-4" />
-                    <span>Deposit & Open New Batch</span>
+                    <span>Deposit & Open New Batch (via 1AM)</span>
                   </>
                 )}
               </button>
@@ -364,7 +464,7 @@ export const AdminPayroll: React.FC<AdminPayrollProps> = ({
               {isFinalizing ? (
                 <>
                   <RefreshCw className="h-4 w-4 animate-spin" />
-                  <span>Proving ZK Circuit...</span>
+                  <span>Proving & Signing via 1AM...</span>
                 </>
               ) : ledgerState.isSettled ? (
                 <>
@@ -374,7 +474,7 @@ export const AdminPayroll: React.FC<AdminPayrollProps> = ({
               ) : (
                 <>
                   <Scale className="h-4 w-4" />
-                  <span>Prove & Lock Settlement</span>
+                  <span>Prove & Lock Settlement (via 1AM)</span>
                 </>
               )}
             </button>

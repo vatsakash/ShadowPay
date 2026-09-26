@@ -189,7 +189,8 @@ export class ShadowPayEngine {
    */
   public async depositPayrollBudget(
     adminAddress: string,
-    budget: bigint
+    budget: bigint,
+    overrideTxHash?: string
   ): Promise<ZKProofLog> {
     const startTime = performance.now();
     const batchHash = mockSha256(`BATCH_${Date.now()}_${adminAddress}`);
@@ -216,7 +217,7 @@ export class ShadowPayEngine {
       witnessSummary: `Escrow budget funded: ${budget.toString()} tNIGHT committed to batch hash`,
       zkProofHash: mockSha256(`ZK_DEPOSIT_${batchHash}_${budget}`),
       timestamp: new Date().toISOString(),
-      txHash: mockSha256(`TX_DEPOSIT_${Date.now()}`),
+      txHash: overrideTxHash || mockSha256(`TX_DEPOSIT_${Date.now()}`),
       executionTimeMs: Math.round(performance.now() - startTime + 85),
     };
 
@@ -232,7 +233,8 @@ export class ShadowPayEngine {
     role: string,
     recipientAddress: string,
     salaryAmount: bigint,
-    minCommittedFloor: bigint
+    minCommittedFloor: bigint,
+    overrideTxHash?: string
   ): Promise<{ split: RecipientSplitRule; proofLog: ZKProofLog }> {
     const startTime = performance.now();
 
@@ -293,7 +295,7 @@ export class ShadowPayEngine {
       witnessSummary: `Shielded split allocation verified: salary >= min committed floor and budget conserved. Individual amount hidden in commitment.`,
       zkProofHash: mockSha256(`ZK_SPLIT_${commitmentHash}`),
       timestamp: new Date().toISOString(),
-      txHash: mockSha256(`TX_SPLIT_${Date.now()}_${commitmentHash}`),
+      txHash: overrideTxHash || mockSha256(`TX_SPLIT_${Date.now()}_${commitmentHash}`),
       executionTimeMs: Math.round(performance.now() - startTime + 95),
     };
 
@@ -304,7 +306,7 @@ export class ShadowPayEngine {
   /**
    * Circuit 3: finalize_settlement_batch
    */
-  public async finalizeSettlementBatch(): Promise<ZKProofLog> {
+  public async finalizeSettlementBatch(overrideTxHash?: string): Promise<ZKProofLog> {
     const startTime = performance.now();
 
     if (this.ledgerState.isSettled) {
@@ -334,7 +336,7 @@ export class ShadowPayEngine {
       witnessSummary: `Zero-Knowledge proof generated: Total split sum exactly equals funded budget. Disbursement batch locked for private claims.`,
       zkProofHash: mockSha256(`ZK_FINALIZE_${this.ledgerState.batchHash}`),
       timestamp: new Date().toISOString(),
-      txHash: mockSha256(`TX_FINALIZE_${Date.now()}`),
+      txHash: overrideTxHash || mockSha256(`TX_FINALIZE_${Date.now()}`),
       executionTimeMs: Math.round(performance.now() - startTime + 140),
     };
 
@@ -347,7 +349,8 @@ export class ShadowPayEngine {
    */
   public async claimPrivatePayout(
     splitId: string,
-    providedSecret?: string
+    providedSecret?: string,
+    overrideTxHash?: string
   ): Promise<ZKProofLog> {
     const startTime = performance.now();
 
@@ -378,7 +381,7 @@ export class ShadowPayEngine {
     this.spentNullifiers.add(split.nullifier);
     split.isClaimed = true;
     split.claimedAt = new Date().toISOString();
-    split.claimTxHash = mockSha256(`TX_CLAIM_${Date.now()}_${split.id}`);
+    split.claimTxHash = overrideTxHash || mockSha256(`TX_CLAIM_${Date.now()}_${split.id}`);
     split.claimNullifier = split.nullifier;
     this.ledgerState.claimsCount += 1;
 
