@@ -16,7 +16,7 @@ Welcome to **ShadowPay**, the zero-knowledge confidential payroll and revenue-sp
 
 ShadowPay uses a pure in-browser deployment flow powered by the **1AM extension on Midnight Preprod** (matching `midnight-skills-counter-dapp`):
 
-1. **Open the Deploy Page**: Navigate to [`/deploy`](https://shadowpay-midnight.vercel.app/deploy) or click **Deploy** in the top navigation bar.
+1. **Open the Deploy Page**: Navigate to [`/deploy`](https://shadow-pay-hk42.vercel.app/deploy) or click **Deploy** in the top navigation bar.
 2. **Network ID Initialization**: The app automatically sets `setNetworkId('preprod')` before any wallet or contract operation.
 3. **1AM Extension Connection**: The app detects `window.midnight['1am']`. Ensure your wallet network is set to **Preprod**.
 4. **Deploy Contract**: Click **Deploy Contract Now**.

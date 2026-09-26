@@ -19,7 +19,7 @@ Teams, DAOs, and freelance collectives currently have to choose between **transp
 
 ## Live Demo & Links
 
-- 🌐 **Live Demo (Preprod Web App)**: [https://shadowpay-midnight.vercel.app](https://shadowpay-midnight.vercel.app)
+- 🌐 **Live Demo (Preprod Web App)**: [https://shadow-pay-hk42.vercel.app](https://shadow-pay-hk42.vercel.app)
 - 🐦 **Product X Profile**: [@ShadowPayHQ](https://x.com/ShadowPayHQ)
 - 🎥 **Video Demo Walkthrough**: [Watch Demo on Google Drive](https://drive.google.com/file/d/1EtDqa7OfEIXpTFXmZ51Ci7fefmtJVmuZ/view?usp=sharing)
 - 💻 **GitHub Repository**: [https://github.com/vatsakash/ShadowPay](https://github.com/vatsakash/ShadowPay)
@@ -48,7 +48,7 @@ ShadowPay implements the official **1AM browser extension deployment flow** (mir
 2. **No Funded Server-Side Deployer**: Everything is signed, balanced, and broadcast client-side through the user's wallet.
 3. **No Local Proof Server Required**: Proving operations are performed via 1AM ProofStation with sponsored zero DUST gas fees.
 4. **Explicit Network ID**: `setNetworkId('preprod')` is invoked explicitly prior to any wallet or contract interaction.
-5. **Dedicated `/deploy` Route**: The deploy UI lives on [`/deploy`](https://shadowpay-midnight.vercel.app/deploy).
+5. **Dedicated `/deploy` Route**: The deploy UI lives on [`/deploy`](https://shadow-pay-hk42.vercel.app/deploy).
 6. **Prominent Address Output**: After deployment, the verified contract address (Hex & Bech32m) is prominently displayed and linked to the Midnight Preprod Explorer.
 
 ---

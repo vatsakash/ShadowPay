@@ -7,7 +7,7 @@
 3. **Anti-Double Disbursement**: Nullifiers ensure no contributor is paid twice.
 4. **Selective Disclosure**: Contributors receive cryptographic tax and audit receipts they can selectively disclose to auditors or revenue authorities.
 
-- 🌐 **Live Demo (Preprod Web App)**: [https://shadowpay-midnight.vercel.app](https://shadowpay-midnight.vercel.app)
+- 🌐 **Live Demo (Preprod Web App)**: [https://shadow-pay-hk42.vercel.app](https://shadow-pay-hk42.vercel.app)
 - 🐦 **Product X Profile**: [@ShadowPayHQ](https://x.com/ShadowPayHQ)
 - 🎥 **Video Demo Walkthrough**: [Watch Demo on Google Drive](https://drive.google.com/file/d/1EtDqa7OfEIXpTFXmZ51Ci7fefmtJVmuZ/view?usp=sharing)
 - 💻 **GitHub Repository**: [https://github.com/vatsakash/ShadowPay](https://github.com/vatsakash/ShadowPay)

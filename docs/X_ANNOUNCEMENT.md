@@ -3,7 +3,7 @@
 **Product Handle**: [@ShadowPayHQ](https://x.com/ShadowPayHQ)  
 **Profile Name**: ShadowPay 🛡️ (Midnight Network)  
 **Bio**: Confidential payroll & revenue-split settlements on @MidnightNtwrk. Proving total solvency & contractual minimum floors with ZK proofs without salary leakage. Built for @risein_ed.  
-**Website Link**: https://shadowpay-midnight.vercel.app  
+**Website Link**: https://shadow-pay-hk42.vercel.app  
 **Location**: Midnight Preprod
 
 ---
@@ -52,7 +52,7 @@
 ### Tweet 5 (Call to Action & Links)
 > 4/ ShadowPay is LIVE on Midnight Preprod for the @risein_ed Moonshots Level 4 Challenge!
 >
-> 🌐 Live App: https://shadowpay-midnight.vercel.app
+> 🌐 Live App: https://shadow-pay-hk42.vercel.app
 > 📜 Preprod Contract: 0x8f3c1a99d45e7b23118cf90234a78bc91124ef901235bcde9018442ac091ef7a
 > 💻 GitHub: https://github.com/vatsakash/ShadowPay
 >
