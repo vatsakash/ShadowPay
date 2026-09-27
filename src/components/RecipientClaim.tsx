@@ -353,7 +353,7 @@ export const RecipientClaim: React.FC<RecipientClaimProps> = ({
                     {isClaiming ? (
                       <>
                         <RefreshCw className="h-4 w-4 animate-spin" />
-                        <span>Signing & Claiming via 1AM...</span>
+                        <span>Signing & Claiming via 1AM (~6s)...</span>
                       </>
                     ) : (
                       <>

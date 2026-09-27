@@ -409,7 +409,7 @@ export const AdminPayroll: React.FC<AdminPayrollProps> = ({
                 {isDepositing ? (
                   <>
                     <RefreshCw className="h-4 w-4 animate-spin" />
-                    <span>Signing & Balancing via 1AM...</span>
+                    <span>Signing & Balancing via 1AM (~6s)...</span>
                   </>
                 ) : (
                   <>
@@ -464,7 +464,7 @@ export const AdminPayroll: React.FC<AdminPayrollProps> = ({
               {isFinalizing ? (
                 <>
                   <RefreshCw className="h-4 w-4 animate-spin" />
-                  <span>Proving & Signing via 1AM...</span>
+                  <span>Proving & Signing via 1AM (~6s)...</span>
                 </>
               ) : ledgerState.isSettled ? (
                 <>
