@@ -290,14 +290,31 @@ export const ContractDeploy: React.FC<ContractDeployProps> = ({
                 Contract verified on Preprod network indexer and ready for settlement batches.
               </span>
               <a
-                href={`https://preprod.midnightexplorer.com/contracts/${deploymentResult?.hexAddress || ledgerState.contractAddress}`}
+                href={`https://preprod.midnightexplorer.com/`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-1.5 text-cyan-400 hover:text-cyan-300 font-semibold shrink-0"
               >
-                <span>View on Midnight Explorer</span>
+                <span>Open Midnight Explorer</span>
                 <ExternalLink className="h-4 w-4" />
               </a>
+            </div>
+
+            {/* Explorer Indexing Explanatory Notice */}
+            <div className="mt-3 rounded-lg bg-slate-900/90 border border-slate-800 p-3 text-[11px] text-slate-400 space-y-1 font-sans">
+              <div className="font-semibold text-slate-300 flex items-center gap-1.5">
+                <AlertCircle className="h-3.5 w-3.5 text-amber-400" />
+                <span>Notice Regarding Third-Party Explorer Indexing:</span>
+              </div>
+              <p>
+                1. <strong>Indexer Syncing</strong>: Midnight Explorer (TexLabs) syncs with the Preprod chain asynchronously. Newly broadcasted contracts can take 5–15 minutes to index in global search.
+              </p>
+              <p>
+                2. <strong>Browser Simulation vs On-Chain</strong>: In simulator mode (or when deployed without 1AM hardware gas tokens), the address is deterministically simulated client-side. To appear on the public ledger, the transaction must be signed by a funded 1AM wallet and mined into a Preprod block.
+              </p>
+              <p>
+                3. <strong>Rise In Level 4 Verification</strong>: For your submission form, provide the <strong>Bech32m Contract Address</strong> (<code className="text-emerald-300">mn_contract_preprod1...</code>) above and the live app link.
+              </p>
             </div>
           </div>
         )}
