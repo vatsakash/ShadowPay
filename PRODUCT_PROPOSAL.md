@@ -11,7 +11,7 @@
 - 🐦 **Product X Profile**: [@ShadowPayHQ](https://x.com/ShadowPayHQ)
 - 🎥 **Video Demo Walkthrough**: [Watch Demo on Google Drive](https://drive.google.com/file/d/1EtDqa7OfEIXpTFXmZ51Ci7fefmtJVmuZ/view?usp=sharing)
 - 💻 **GitHub Repository**: [https://github.com/vatsakash/ShadowPay](https://github.com/vatsakash/ShadowPay)
-- 📜 **Midnight Preprod Contract**: `0x8f3c1a99d45e7b23118cf90234a78bc91124ef901235bcde9018442ac091ef7a`
+- 📜 **Midnight Preprod Contract**: `0x89e233ecf339175aecbc07ba419e998edc8c3115c2bdc23b7cc120e2cc6adcf0` | [1AM Explorer](https://explorer.1am.xyz/contract/89e233ecf339175aecbc07ba419e998edc8c3115c2bdc23b7cc120e2cc6adcf0)
 
 ---
 

@@ -53,7 +53,7 @@
 > 4/ ShadowPay is LIVE on Midnight Preprod for the @risein_ed Moonshots Level 4 Challenge!
 >
 > 🌐 Live App: https://shadow-pay-hk42.vercel.app
-> 📜 Preprod Contract: 0x8f3c1a99d45e7b23118cf90234a78bc91124ef901235bcde9018442ac091ef7a
+> 📜 Preprod Contract: 0x89e233ecf339175aecbc07ba419e998edc8c3115c2bdc23b7cc120e2cc6adcf0
 > 💻 GitHub: https://github.com/vatsakash/ShadowPay
 >
 > Follow @ShadowPayHQ for updates! 🌙✨

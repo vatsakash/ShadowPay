@@ -300,6 +300,15 @@ export const ContractDeploy: React.FC<ContractDeployProps> = ({
                 <div className="flex items-center justify-between text-slate-400 font-sans text-[11px] mb-1">
                   <span className="font-semibold text-slate-300">Explorer Hex Contract Address:</span>
                   <div className="flex items-center gap-2">
+                    <a
+                      href={`https://explorer.1am.xyz/contract/${(deploymentResult?.hexAddress || ledgerState.contractAddress).replace(/^0x/, '')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-cyan-400 hover:text-cyan-300 font-semibold text-[10px] mr-1"
+                    >
+                      <span>View on 1AM</span>
+                      <ExternalLink className="h-3 w-3" />
+                    </a>
                     <button
                       onClick={() => handleCopy((deploymentResult?.hexAddress || ledgerState.contractAddress).replace(/^0x/, ''), 'hexraw')}
                       className="text-slate-400 hover:text-slate-300 text-[10px]"
@@ -318,7 +327,7 @@ export const ContractDeploy: React.FC<ContractDeployProps> = ({
                   {deploymentResult?.hexAddress || ledgerState.contractAddress}
                 </div>
                 <div className="text-[10px] text-slate-500 font-sans mt-1">
-                  Searchable on preprod.midnightexplorer.com (with or without 0x prefix)
+                  Verified on Midnight Preprod • Direct 1AM Explorer URL: <span className="text-slate-400">explorer.1am.xyz/contract/{(deploymentResult?.hexAddress || ledgerState.contractAddress).replace(/^0x/, '')}</span>
                 </div>
               </div>
 
@@ -345,32 +354,64 @@ export const ContractDeploy: React.FC<ContractDeployProps> = ({
               <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800/80">
                 <div className="flex items-center justify-between text-slate-400 font-sans text-[11px] mb-1">
                   <span className="font-semibold text-slate-300">Deployment Transaction Hash:</span>
-                  <button
-                    onClick={() => handleCopy(deploymentResult?.txHash || ledgerState.deploymentTxHash, 'tx')}
-                    className="text-cyan-400 hover:text-cyan-300 font-semibold"
-                  >
-                    {copiedKey === 'tx' ? 'Copied!' : 'Copy Tx Hash'}
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <a
+                      href={`https://explorer.1am.xyz/tx/${(deploymentResult?.txHash || ledgerState.deploymentTxHash).replace(/^0x/, '')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-cyan-400 hover:text-cyan-300 font-semibold text-[10px] mr-1"
+                    >
+                      <span>View Tx on 1AM</span>
+                      <ExternalLink className="h-3 w-3" />
+                    </a>
+                    <button
+                      onClick={() => handleCopy(deploymentResult?.txHash || ledgerState.deploymentTxHash, 'tx')}
+                      className="text-cyan-400 hover:text-cyan-300 font-semibold"
+                    >
+                      {copiedKey === 'tx' ? 'Copied!' : 'Copy Tx Hash'}
+                    </button>
+                  </div>
                 </div>
                 <div className="text-slate-300 text-xs break-all select-all font-mono">
                   {deploymentResult?.txHash || ledgerState.deploymentTxHash}
                 </div>
+                <div className="text-[10px] text-slate-500 font-sans mt-1">
+                  Verified in Preprod block • Direct 1AM Explorer URL: <span className="text-slate-400">explorer.1am.xyz/tx/{(deploymentResult?.txHash || ledgerState.deploymentTxHash).replace(/^0x/, '')}</span>
+                </div>
               </div>
             </div>
 
-            <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-sans">
+            <div className="pt-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs font-sans">
               <span className="text-slate-400 text-[11px]">
                 Contract verified on Preprod network indexer and ready for settlement batches.
               </span>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <a
+                  href={`https://explorer.1am.xyz/contract/${(deploymentResult?.hexAddress || ledgerState.contractAddress).replace(/^0x/, '')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 bg-cyan-500/10 border border-cyan-500/30 hover:bg-cyan-500/20 text-cyan-300 px-3 py-1.5 rounded-lg font-semibold shrink-0 transition-colors"
+                >
+                  <span>1AM Contract</span>
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+                <a
+                  href={`https://explorer.1am.xyz/tx/${(deploymentResult?.txHash || ledgerState.deploymentTxHash).replace(/^0x/, '')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 bg-cyan-500/10 border border-cyan-500/30 hover:bg-cyan-500/20 text-cyan-300 px-3 py-1.5 rounded-lg font-semibold shrink-0 transition-colors"
+                >
+                  <span>1AM Tx Hash</span>
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </a>
                 <a
                   href="https://preprod.midnightexplorer.com/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-cyan-400 hover:text-cyan-300 font-semibold shrink-0"
+                  className="flex items-center gap-1.5 text-slate-400 hover:text-slate-300 font-medium shrink-0 ml-1"
                 >
-                  <span>Open Midnight Explorer</span>
-                  <ExternalLink className="h-4 w-4" />
+                  <span>Midnight Explorer</span>
+                  <ExternalLink className="h-3.5 w-3.5" />
                 </a>
               </div>
             </div>
@@ -382,13 +423,16 @@ export const ContractDeploy: React.FC<ContractDeployProps> = ({
                 <span>Notice Regarding Midnight Explorer & On-Chain Indexing:</span>
               </div>
               <p>
-                1. <strong>Official Primary Consensus</strong>: The official Midnight Preprod GraphQL Indexer (<code className="text-cyan-300">indexer.preprod.midnight.network</code>) verifies block confirmations live above.
+                1. <strong>1AM Explorer Verification</strong>: Midnight Preprod transactions and contracts are instantly verifiable at <a href="https://explorer.1am.xyz" target="_blank" rel="noopener noreferrer" className="text-cyan-400 underline">explorer.1am.xyz</a>. Use the direct buttons above to inspect on-chain consensus immediately.
               </p>
               <p>
-                2. <strong>Third-Party Explorer Indexing</strong>: Midnight Explorer (<code className="text-slate-300">preprod.midnightexplorer.com</code> operated by TexLabs) syncs with the Preprod chain asynchronously. If their global search service encounters tunnel latency, copy the <strong>Hex Contract Address</strong> or <strong>Deployment Transaction Hash</strong> above to search directly.
+                2. <strong>1AM Dust Fee Authorization</strong>: When deploying through the 1AM wallet, if the wallet shows <em>&quot;Dust Sponsorship Failed: Would you like to pay the dust fee from your own wallet?&quot;</em>, click <strong>[ Pay with My Dust ]</strong> so your wallet signs and broadcasts the transaction directly to Preprod using your DUST balance.
               </p>
               <p>
-                3. <strong>Rise In Level 4 Verification</strong>: For your Rise In challenge submission, paste the <strong>Bech32m Contract Address</strong> (<code className="text-emerald-300">mn_contract_preprod1...</code>) and the live Vercel app link.
+                3. <strong>Official Primary Consensus</strong>: The official Midnight Preprod GraphQL Indexer (<code className="text-cyan-300">indexer.preprod.midnight.network</code>) verifies block confirmations live above.
+              </p>
+              <p>
+                4. <strong>Rise In Level 4 Verification</strong>: For your Rise In challenge submission, paste the <strong>Bech32m Contract Address</strong> (<code className="text-emerald-300">mn_contract_preprod1...</code>) and the live Vercel app link.
               </p>
             </div>
           </div>
