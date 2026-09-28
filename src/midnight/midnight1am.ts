@@ -148,7 +148,9 @@ export async function createConnectedSession(
 
   try {
     if (typeof api.getConfiguration === 'function') {
-      rawConfig = await api.getConfiguration();
+      const getCfg = api.getConfiguration();
+      const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('TIMEOUT')), 3000));
+      rawConfig = await Promise.race([getCfg, timeout]);
     }
   } catch (e) {
     console.warn('api.getConfiguration notice:', e);
@@ -156,7 +158,9 @@ export async function createConnectedSession(
 
   try {
     if (typeof api.getUnshieldedAddress === 'function') {
-      unshieldedAddress = await api.getUnshieldedAddress();
+      const getAddr = api.getUnshieldedAddress();
+      const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('TIMEOUT')), 3000));
+      unshieldedAddress = await Promise.race([getAddr, timeout]);
     }
   } catch (e) {
     console.warn('api.getUnshieldedAddress notice:', e);
@@ -164,7 +168,9 @@ export async function createConnectedSession(
 
   try {
     if (typeof api.getShieldedAddresses === 'function') {
-      shieldedAddress = await api.getShieldedAddresses();
+      const getShielded = api.getShieldedAddresses();
+      const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('TIMEOUT')), 3000));
+      shieldedAddress = await Promise.race([getShielded, timeout]);
     }
   } catch (e) {
     console.warn('api.getShieldedAddresses notice:', e);
@@ -185,9 +191,11 @@ export async function createConnectedSession(
   let provingProvider: any = null;
   try {
     if (typeof api.getProvingProvider === 'function') {
-      provingProvider = await api.getProvingProvider({
+      const getProvider = api.getProvingProvider({
         baseUrl: zkAssetBasePath,
       });
+      const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('TIMEOUT')), 3000));
+      provingProvider = await Promise.race([getProvider, timeout]);
     }
   } catch (err) {
     console.warn('1AM getProvingProvider notice:', err);

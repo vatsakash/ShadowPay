@@ -29,9 +29,9 @@ export class ShadowPayEngine {
   private proofLogs: ZKProofLog[] = [];
 
   // Preprod default deployment addresses
-  public static readonly DEFAULT_PREPROD_HEX = '0x8f3c1a99d45e7b23118cf90234a78bc91124ef901235bcde9018442ac091ef7a';
+  public static readonly DEFAULT_PREPROD_HEX = '0x89e233ecf339175aecbc07ba419e998edc8c3115c2bdc23b7cc120e2cc6adcf0';
   public static readonly DEFAULT_PREPROD_BECH32M = 'mn_contract_preprod1qw9870x9m5l42k9z8f31y6a4b7c0v28e53l90qw82k4';
-  public static readonly DEFAULT_DEPLOY_TX = '0x9a84b3c2d1e0f9876543210abcdef0123456789abcdef0123456789abcdef012';
+  public static readonly DEFAULT_DEPLOY_TX = '0xabdf2928ba59f32f45b111f324814f54d328760f8de02141b2b267787aa008d9';
 
   private constructor() {
     this.ledgerState = {
