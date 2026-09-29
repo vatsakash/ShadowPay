@@ -22,24 +22,6 @@ export interface DeploymentStepLog {
 }
 
 export class BrowserDeployer {
-  public static generateRandomHex(length = 64): string {
-    const chars = '0123456789abcdef';
-    let result = '0x';
-    for (let i = 0; i < length; i++) {
-      result += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return result;
-  }
-
-  public static generateBech32m(prefix = 'mn_contract_preprod1'): string {
-    const chars = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l';
-    let result = prefix;
-    for (let i = 0; i < 38; i++) {
-      result += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return result;
-  }
-
   /**
    * Browser-only deploy path through 1AM wallet extension on Midnight Preprod
    */

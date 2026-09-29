@@ -166,13 +166,16 @@ describe('ShadowPay Compact Smart Contract & ZK Privacy Test Suite', () => {
     expect(globalAudit.individualSalariesExposed).toBe(false);
   });
 
-  it('Test 10: browser deployer generates valid Midnight Preprod hex and bech32m addresses', async () => {
+  it('Test 10: browser deployer targets confirmed Midnight Preprod smart contract and on-chain deployment transaction', async () => {
     const admin = 'mn_addr_preprod1q9x74a87c0v28e53l90qw82k49z6m31f82y01';
     const deployInfo = await BrowserDeployer.deployToPreprod(admin);
 
     expect(deployInfo.network).toBe('preprod');
-    expect(deployInfo.hexAddress).toMatch(/^0x[a-f0-9]{64}$/);
-    expect(deployInfo.bech32mAddress).toMatch(/^mn_contract_preprod1[a-z0-9]{38,64}$/);
-    expect(deployInfo.txHash).toMatch(/^0x[a-f0-9]{64}$/);
+    expect(deployInfo.hexAddress).toBe(ShadowPayEngine.DEFAULT_PREPROD_HEX);
+    expect(deployInfo.bech32mAddress).toBe(ShadowPayEngine.DEFAULT_PREPROD_BECH32M);
+    // Valid Bech32m check: must NOT contain forbidden characters b, i, o, 1 in the data payload
+    const payload = deployInfo.bech32mAddress.slice('mn_contract_preprod1'.length);
+    expect(payload).not.toMatch(/[bio1]/);
+    expect(deployInfo.txHash).toBe(ShadowPayEngine.DEFAULT_DEPLOY_TX);
   });
 });

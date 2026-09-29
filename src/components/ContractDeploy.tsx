@@ -346,7 +346,7 @@ export const ContractDeploy: React.FC<ContractDeployProps> = ({
                   {deploymentResult?.bech32mAddress || ledgerState.preprodBech32m}
                 </div>
                 <div className="text-[10px] text-slate-500 font-sans mt-1">
-                  Format required for Rise In Level 4 challenge submission form
+                  BIP-350 Bech32m representation derived from 32-byte contract hash (accepted by Rise In submission form)
                 </div>
               </div>
 
