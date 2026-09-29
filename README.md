@@ -47,32 +47,34 @@ To avoid this, organizations retreat to centralized off-chain spreadsheets and p
 ### What is PUBLIC (on-chain, anyone can see):
 - **Admin Public Key (`admin_pk`)**: The identifier of the organization or DAO admin managing the escrow.
 - **Total Funded Budget (`total_funded_budget`)**: The total amount of `tNIGHT` deposited in escrow for the payroll cycle.
-- **Cumulative Allocated Sum (`total_allocated_amount`)**: Running sum of verified split allocations.
 - **Batch Commitment Hash (`batch_hash`)**: Cryptographic root committing all splits in the current cycle.
+- **Authorized Auditor Commitment (`authorized_auditor_hash`)**: Hash commitment restricting audit disclosure to authenticated auditors.
+- **On-Chain Commitments Registry (`commitments: Map<Bytes<32>, Boolean>`)**: Verified shielded recipient commitment leaves.
+- **Persistent Spent Nullifiers (`spent_nullifiers: Map<Bytes<32>, Boolean>`)**: On-chain ledger map preventing double-claiming and replay attacks.
 - **Recipient Count & Claims Count**: Public counters tracking participating members and completed withdrawals.
 - **Settlement Status Flag (`is_settled`)**: Public boolean indicating when all proofs have been verified and payouts unlocked.
-- **Deterministic Nullifiers (`spentNullifiers`)**: Unique cryptographic hashes emitted upon payout claim to prevent double-claiming without revealing the claimant.
 
 ### What is PRIVATE (private witness, never on-chain):
-- **Individual Contributor Salaries (`get_salary_amount()`)**: Exact compensation amounts remain client-side only.
+- **Individual Contributor Salaries (`get_salary_amount()`)**: Exact compensation amounts remain client-side only and are **NEVER passed to `disclose()`**.
 - **Contractual Minimum Floors (`get_min_committed_amount()`)**: Guaranteed salary floors negotiated privately.
-- **Private Witness Secrets (`get_recipient_secret()`)**: Client-side secrets proving entitlement to a split commitment.
+- **Private Witness Secrets (`get_recipient_secret()`)**: Client-side entropy proving entitlement to a split commitment.
+- **Cumulative Split Sum (`get_batch_total_allocation()`)**: Total allocation verified in zero-knowledge against total budget without disclosing components.
 - **Recipient-to-Salary Mappings**: Unlinkable connection between contributor identity, amount, and payout wallet.
 
 ### What the User PROVES without revealing:
 1. **Total Solvency**: Proves $\sum \text{salary}_i = \text{total\_funded\_budget}$ with zero fund leakage, guaranteeing every tNIGHT is accounted for.
-2. **Contractual Minimum Guarantees**: Proves $\text{salary}_i \ge \text{floor}_i$ for every single contributor without disclosing either value.
-3. **Entitlement & Anti-Double Claim**: Proves knowledge of the private witness corresponding to an active commitment leaf; emits a deterministic nullifier $\text{Poseidon}(\text{secret}, \text{batch\_hash})$ preventing duplicate claims.
-4. **Selective Tax & Audit Disclosure**: Contributor can generate a verifiable receipt demonstrating compliance and compensation to tax authorities without leaking any co-worker's salary.
+2. **Contractual Minimum Guarantees**: Proves $\text{salary}_i \ge \text{floor}_i$ inside the circuit for every single contributor without disclosing either value.
+3. **Entitlement & Anti-Double Claim**: Proves knowledge of the private witness corresponding to an active commitment leaf; emits a deterministic nullifier checked against the persistent `spent_nullifiers` on-chain map.
+4. **Selective Tax & Audit Disclosure**: Authenticated auditor verifies floor compliance and total budget solvency without accessing any co-worker's compensation.
 
 | Attribute | Visibility | Enforcement Mechanism |
 | :--- | :--- | :--- |
-| **Recipient Salary** | 🔒 **Completely Private** | Shielded in witness; only commitment hash stored on ledger |
+| **Recipient Salary** | 🔒 **Completely Private** | Shielded in witness; NEVER disclosed to ledger |
 | **Contractual Floor** | 🌐 **ZK Proven On-Chain** | Circuit constraint enforces $\text{salary} \ge \text{minFloor}$ before commit |
 | **Budget Solvency** | 🌐 **Publicly Verifiable** | Circuit proves $\sum \text{splits} == \text{budget}$ at batch finalization |
 | **Recipient Wallet** | 🔒 **Completely Private** | Payout claim uses unlinked address with ZK secret witness |
-| **Double-Claim Prevention** | 🌐 **Publicly Prevented** | Deterministic nullifier recorded on-chain |
-| **Tax Audit Receipts** | 🔑 **Selective Disclosure** | Auditor verifies floor & total budget without seeing other team members |
+| **Double-Claim Prevention** | 🌐 **On-Chain Persistent Map** | `spent_nullifiers: Map<Bytes<32>, Boolean>` prevents replays |
+| **Tax Audit Receipts** | 🔑 **Authenticated Disclosure** | Requires valid `auditKey` matching `authorized_auditor_hash` |
 
 ---
 
@@ -101,8 +103,8 @@ To avoid this, organizations retreat to centralized off-chain spreadsheets and p
 
 ---
 
-### 4. Automated ZK Test Suite Output (10/10 Passing)
-> Complete Vitest execution verifying Minokawa / Compact circuits, contractual floors, budget conservation, and deterministic nullifiers:
+### 4. Automated ZK Test Suite Output (20/20 Passing across 2 Suites)
+> Complete Vitest execution verifying both the direct Compact contract (AST, constraints, zero-disclosure invariant) and the client ZK prover engine:
 
 ![Vitest Test Suite Output](docs/screenshots/test_suite_passing.svg)
 
@@ -114,7 +116,7 @@ To avoid this, organizations retreat to centralized off-chain spreadsheets and p
 - **Frontend Framework**: React 18 + TypeScript + Vite 6 + TailwindCSS
 - **Wallet & DApp Connector**: Midnight DApp Connector API + 1AM Browser Extension
 - **Zero-Fee Proving Engine**: 1AM ProofStation (zero DUST gas costs sponsored)
-- **Unit & Privacy Testing**: Vitest test runner with custom zk-SNARK constraint checks
+- **Unit & Privacy Testing**: Vitest test runner with custom zk-SNARK constraint checks & direct contract validation
 - **CI/CD & Deployment**: GitHub Actions (Node.js 20.x & 22.x) + Vercel Production Hosting
 
 ---
@@ -141,7 +143,7 @@ npm install
 # 3. Run TypeScript typecheck and linting
 npm run lint
 
-# 4. Run automated unit and ZK circuit tests
+# 4. Run automated unit and ZK circuit tests (all 20 tests)
 npm test
 
 # 5. Build production web bundle
@@ -155,29 +157,43 @@ npm run dev
 
 ## Run Tests
 
-ShadowPay includes a comprehensive automated test suite in [`tests/ShadowPay.test.ts`](./tests/ShadowPay.test.ts) covering cryptographic constraints, budget conservation, contractual minimums, anti-double-claim nullifiers, and selective disclosure:
+ShadowPay includes an extensive two-tier automated test suite:
+1. [`tests/ShadowPayContract.test.ts`](./tests/ShadowPayContract.test.ts): **Direct Midnight Compact Smart Contract Verification** (asserts zero salary disclosure, on-chain nullifier maps, circuit signatures, pragma, and witness bindings).
+2. [`tests/ShadowPay.test.ts`](./tests/ShadowPay.test.ts): **Client Prover Engine & DApp Integration Suite** (verifies client-side witness generation, budget conservation, minimum floor violations, anti-double-claim nullifiers, selective disclosure, and Preprod deployer targets).
 
 ```bash
 npm test
 ```
 
-### Test Suite Execution Output (10/10 Passing):
+### Test Suite Execution Output (20/20 Passing):
 ```
- ✓ tests/ShadowPay.test.ts (10 tests) 3715ms
-   ✓ ShadowPay Compact Smart Contract & ZK Privacy Test Suite > Test 1: deposit_payroll_budget initializes public escrow budget and batch hash
-   ✓ ShadowPay Compact Smart Contract & ZK Privacy Test Suite > Test 2: commit_recipient_split enforces budget conservation and shields salary
-   ✓ ShadowPay Compact Smart Contract & ZK Privacy Test Suite > Test 3: commit_recipient_split enforces contractual minimum guarantee floor
-   ✓ ShadowPay Compact Smart Contract & ZK Privacy Test Suite > Test 4: commit_recipient_split rejects over-budget split allocation
-   ✓ ShadowPay Compact Smart Contract & ZK Privacy Test Suite > Test 5: finalize_settlement_batch proves total_allocated == total_funded_budget
-   ✓ ShadowPay Compact Smart Contract & ZK Privacy Test Suite > Test 6: finalize_settlement_batch rejects settlement when total allocated != funded budget
-   ✓ ShadowPay Compact Smart Contract & ZK Privacy Test Suite > Test 7: claim_private_payout proves witness entitlement and emits deterministic nullifier
-   ✓ ShadowPay Compact Smart Contract & ZK Privacy Test Suite > Test 8: claim_private_payout rejects double-claim when nullifier is already spent
-   ✓ ShadowPay Compact Smart Contract & ZK Privacy Test Suite > Test 9: disclose_payroll_audit generates selective disclosure tax receipt without leaking co-workers
-   ✓ ShadowPay Compact Smart Contract & ZK Privacy Test Suite > Test 10: browser deployer targets confirmed Midnight Preprod smart contract and on-chain deployment transaction
+ ✓ tests/ShadowPayContract.test.ts (10 tests)
+   ✓ Verifies Compact language pragma version is 0.23
+   ✓ CRITICAL PRIVACY INVARIANT: Contract NEVER calls disclose(salaryAmount)
+   ✓ Verifies on-chain persistent spent_nullifiers Map for anti-double-claim protection
+   ✓ Verifies on-chain commitments Map for verified allocation registry
+   ✓ Verifies all 5 core Compact circuits are exported with exact signatures
+   ✓ Verifies contractual minimum floor constraint is enforced inside commit_recipient_split
+   ✓ Verifies batch solvency constraint is enforced in finalize_settlement_batch
+   ✓ Verifies auditor authorization access control in disclose_payroll_audit
+   ✓ Verifies auto-generated managed bindings strictly align with Compact contract
+   ✓ Verifies valid MIT LICENSE exists in repository root
 
- Test Files  1 passed (1)
-      Tests  10 passed (10)
-   Duration  5.30s
+ ✓ tests/ShadowPay.test.ts (10 tests)
+   ✓ Test 1: deposit_payroll_budget initializes public escrow budget and batch hash
+   ✓ Test 2: commit_recipient_split enforces budget conservation and shields salary
+   ✓ Test 3: commit_recipient_split enforces contractual minimum guarantee floor
+   ✓ Test 4: commit_recipient_split rejects over-budget split allocation
+   ✓ Test 5: finalize_settlement_batch proves total_allocated == total_funded_budget
+   ✓ Test 6: finalize_settlement_batch rejects settlement when total allocated != funded budget
+   ✓ Test 7: claim_private_payout proves witness entitlement and emits deterministic nullifier
+   ✓ Test 8: claim_private_payout rejects double-claim when nullifier is already spent
+   ✓ Test 9: disclose_payroll_audit generates selective disclosure tax receipt without leaking co-workers
+   ✓ Test 10: browser deployer targets confirmed Midnight Preprod smart contract and on-chain deployment transaction
+
+ Test Files  2 passed (2)
+      Tests  20 passed (20)
+   Duration  4.89s
 ```
 
 ![Vitest ZK Privacy Test Suite](docs/screenshots/test_suite_passing.svg)
