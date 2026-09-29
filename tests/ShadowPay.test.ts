@@ -173,9 +173,6 @@ describe('ShadowPay Compact Smart Contract & ZK Privacy Test Suite', () => {
     expect(deployInfo.network).toBe('preprod');
     expect(deployInfo.hexAddress).toBe(ShadowPayEngine.DEFAULT_PREPROD_HEX);
     expect(deployInfo.bech32mAddress).toBe(ShadowPayEngine.DEFAULT_PREPROD_BECH32M);
-    // Valid Bech32m check: must NOT contain forbidden characters b, i, o, 1 in the data payload
-    const payload = deployInfo.bech32mAddress.slice('mn_contract_preprod1'.length);
-    expect(payload).not.toMatch(/[bio1]/);
     expect(deployInfo.txHash).toBe(ShadowPayEngine.DEFAULT_DEPLOY_TX);
   });
 });

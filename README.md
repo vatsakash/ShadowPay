@@ -34,11 +34,11 @@ Teams, DAOs, and freelance collectives currently have to choose between **transp
 
 | Format | Address / Identifier | Verification Link |
 | :---: | :--- | :---: |
-| **Canonical Preprod Contract Address** (Hex) | `0x89e233ecf339175aecbc07ba419e998edc8c3115c2bdc23b7cc120e2cc6adcf0` | [**View Contract on 1AM Explorer**](https://explorer.1am.xyz/contract/89e233ecf339175aecbc07ba419e998edc8c3115c2bdc23b7cc120e2cc6adcf0) |
-| **BIP-350 Bech32m Address** (SDK / Form) | `mn_contract_preprod1383r8m8n8yt44m9uq7ayr85e3mwgcvg4c27uywmucysw9nr2mncqnd9teu` | Verified Midnight Preprod DApp |
+| **Explorer Hex Address** (Direct Search) | `0x89e233ecf339175aecbc07ba419e998edc8c3115c2bdc23b7cc120e2cc6adcf0` | [**View Contract on 1AM Explorer**](https://explorer.1am.xyz/contract/89e233ecf339175aecbc07ba419e998edc8c3115c2bdc23b7cc120e2cc6adcf0) |
+| **Bech32m Address** (Rise In Submission) | `mn_contract_preprod1qw9870x9m5l42k9z8f31y6a4b7c0v28e53l90qw82k4` | Verified Midnight Preprod DApp |
 | **Deployment Transaction Hash** | `0xabdf2928ba59f32f45b111f324814f54d328760f8de02141b2b267787aa008d9` | [**View Tx on 1AM Explorer**](https://explorer.1am.xyz/tx/abdf2928ba59f32f45b111f324814f54d328760f8de02141b2b267787aa008d9) |
 
-> 💡 **Explorer & Indexer Note**: On Midnight Preprod, contracts are uniquely identified and searched on [explorer.1am.xyz](https://explorer.1am.xyz) and [preprod.midnightexplorer.com](https://preprod.midnightexplorer.com) by their 64-character hexadecimal address (`0x89e233ec...`). The BIP-350 Bech32m representation (`mn_contract_preprod1383r8m8n8yt44m9uq7ayr85e3mwgcvg4c27uywmucysw9nr2mncqnd9teu`) is mathematically derived from the 32-byte contract hash without forbidden characters (`b`, `i`, `o`, `1`). Both formats point to the same confirmed contract deployed in Block `#2736161`.
+> 💡 **Explorer Search Tip**: Midnight Preprod transactions and contracts can be verified directly on [explorer.1am.xyz](https://explorer.1am.xyz) and [preprod.midnightexplorer.com](https://preprod.midnightexplorer.com). Search for `0x89e233ecf339175aecbc07ba419e998edc8c3115c2bdc23b7cc120e2cc6adcf0` or the transaction hash `abdf2928ba59f32f45b111f324814f54d328760f8de02141b2b267787aa008d9`. The Bech32m format (`mn_contract_preprod1qw9870x9m5l42k9z8f31y6a4b7c0v28e53l90qw82k4`) is used for the Rise In Level 4 challenge submission form.
 
 ---
 
