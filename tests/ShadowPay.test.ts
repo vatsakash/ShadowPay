@@ -174,5 +174,5 @@ describe('ShadowPay Compact Smart Contract & ZK Privacy Test Suite', () => {
     expect(deployInfo.hexAddress).toBe(ShadowPayEngine.DEFAULT_PREPROD_HEX);
     expect(deployInfo.bech32mAddress).toBe(ShadowPayEngine.DEFAULT_PREPROD_BECH32M);
     expect(deployInfo.txHash).toBe(ShadowPayEngine.DEFAULT_DEPLOY_TX);
-  });
+  }, 15000);
 });

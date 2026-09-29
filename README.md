@@ -21,7 +21,7 @@ Teams, DAOs, and freelance collectives currently have to choose between **transp
 ## Live Demo & Links
 
 - 🌐 **Live Demo (Preprod Web App)**: [https://shadow-pay-hk42.vercel.app](https://shadow-pay-hk42.vercel.app)
-- 🐦 **Product X Profile**: [@ShadowPayHQ](https://x.com/ShadowPayHQ)
+- 🐦 **Product X Profile**: [@ShadowPayShadow](https://x.com/ShadowPayShadow)
 - 🎥 **Video Demo Walkthrough**: [Watch Demo on Google Drive](https://drive.google.com/file/d/1EtDqa7OfEIXpTFXmZ51Ci7fefmtJVmuZ/view?usp=sharing)
 - 💻 **GitHub Repository**: [https://github.com/vatsakash/ShadowPay](https://github.com/vatsakash/ShadowPay)
 - 📋 **Product Proposal Document**: [PROPOSAL.md](./PROPOSAL.md)
@@ -197,5 +197,5 @@ Automated CI/CD is configured via GitHub Actions in [`.github/workflows/ci.yml`]
 
 ## Product X Profile
 
-- 🐦 **Product X Profile**: [https://x.com/ShadowPayHQ](https://x.com/ShadowPayHQ) (`@ShadowPayHQ`)
+- 🐦 **Product X Profile**: [https://x.com/ShadowPayShadow](https://x.com/ShadowPayShadow) (`@ShadowPayShadow`)
 - 📢 **Launch Thread Details**: [docs/X_ANNOUNCEMENT.md](./docs/X_ANNOUNCEMENT.md)

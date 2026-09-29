@@ -172,13 +172,13 @@ export default function App() {
 
           <div className="flex items-center gap-5 text-slate-400">
             <a
-              href="https://x.com/ShadowPayHQ"
+              href="https://x.com/ShadowPayShadow"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1 hover:text-cyan-400 transition-colors"
             >
               <Twitter className="h-3.5 w-3.5" />
-              <span>@ShadowPayHQ</span>
+              <span>@ShadowPayShadow</span>
             </a>
 
             <a

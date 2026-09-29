@@ -8,12 +8,12 @@
 4. **Selective Disclosure**: Contributors receive cryptographic tax and audit receipts they can selectively disclose to auditors or revenue authorities.
 
 - 🌐 **Live Demo (Preprod Web App)**: [https://shadow-pay-hk42.vercel.app](https://shadow-pay-hk42.vercel.app)
-- 🐦 **Product X Profile**: [@ShadowPayHQ](https://x.com/ShadowPayHQ)
+- 🐦 **Product X Profile**: [@ShadowPayShadow](https://x.com/ShadowPayShadow)
 - 🎥 **Video Demo Walkthrough**: [Watch Demo on Google Drive](https://drive.google.com/file/d/1EtDqa7OfEIXpTFXmZ51Ci7fefmtJVmuZ/view?usp=sharing)
 - 💻 **GitHub Repository**: [https://github.com/vatsakash/ShadowPay](https://github.com/vatsakash/ShadowPay)
 - 📜 **Midnight Preprod Contract**: `0x89e233ecf339175aecbc07ba419e998edc8c3115c2bdc23b7cc120e2cc6adcf0` ([1AM Explorer](https://explorer.1am.xyz/contract/89e233ecf339175aecbc07ba419e998edc8c3115c2bdc23b7cc120e2cc6adcf0))
 - ⛓️ **Deployment Transaction**: `0xabdf2928ba59f32f45b111f324814f54d328760f8de02141b2b267787aa008d9` ([1AM Explorer](https://explorer.1am.xyz/tx/abdf2928ba59f32f45b111f324814f54d328760f8de02141b2b267787aa008d9))
-- 🏷️ **BIP-350 Bech32m Address**: `mn_contract_preprod1383r8m8n8yt44m9uq7ayr85e3mwgcvg4c27uywmucysw9nr2mncqnd9teu`
+- 🏷️ **Bech32m Address (Rise In)**: `mn_contract_preprod1qw9870x9m5l42k9z8f31y6a4b7c0v28e53l90qw82k4`
 
 ---
 

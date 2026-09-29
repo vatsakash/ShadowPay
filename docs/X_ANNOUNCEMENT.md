@@ -1,6 +1,6 @@
 # Product X Profile & Launch Announcement
 
-**Product Handle**: [@ShadowPayHQ](https://x.com/ShadowPayHQ)  
+**Product Handle**: [@ShadowPayShadow](https://x.com/ShadowPayShadow)  
 **Profile Name**: ShadowPay 🛡️ (Midnight Network)  
 **Bio**: Confidential payroll & revenue-split settlements on @MidnightNtwrk. Proving total solvency & contractual minimum floors with ZK proofs without salary leakage. Built for @risein_ed.  
 **Website Link**: https://shadow-pay-hk42.vercel.app  
@@ -11,7 +11,7 @@
 ## Official Launch Tweet Thread
 
 ### Tweet 1 (Main Hook & Announcement)
-> 🚀 Introducing **ShadowPay** (@ShadowPayHQ): Confidential Payroll & Revenue-Split Settlement on @MidnightNtwrk!
+> 🚀 Introducing **ShadowPay** (@ShadowPayShadow): Confidential Payroll & Revenue-Split Settlement on @MidnightNtwrk!
 >
 > DAOs & web3 teams shouldn't have to choose between public salary exposure and unverifiable off-chain spreadsheets.
 >
@@ -56,4 +56,4 @@
 > 📜 Preprod Contract: 0x89e233ecf339175aecbc07ba419e998edc8c3115c2bdc23b7cc120e2cc6adcf0
 > 💻 GitHub: https://github.com/vatsakash/ShadowPay
 >
-> Follow @ShadowPayHQ for updates! 🌙✨
+> Follow @ShadowPayShadow for updates! 🌙✨

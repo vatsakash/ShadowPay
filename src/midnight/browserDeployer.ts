@@ -65,6 +65,7 @@ export class BrowserDeployer {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ query: 'query { block { height } }' }),
+        signal: AbortSignal.timeout(2000),
       });
       const d = await res.json();
       if (d?.data?.block?.height) {
