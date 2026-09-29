@@ -22,7 +22,7 @@ Teams, DAOs, and freelance collectives currently have to choose between **transp
 
 - 🌐 **Live Demo (Preprod Web App)**: [https://shadow-pay-hk42.vercel.app](https://shadow-pay-hk42.vercel.app)
 - 🐦 **Product X Profile**: [@ShadowPayShadow](https://x.com/ShadowPayShadow)
-- 🎥 **Video Demo Walkthrough**: [Watch Demo on Google Drive](https://drive.google.com/file/d/1EtDqa7OfEIXpTFXmZ51Ci7fefmtJVmuZ/view?usp=sharing)
+- 🎥 **Video Demo Walkthrough**: [Watch Demo on Google Drive](https://drive.google.com/file/d/11o55cfCwYoXV9EZ6WoUKhJjrf42e_bkE/view?usp=sharing)
 - 💻 **GitHub Repository**: [https://github.com/vatsakash/ShadowPay](https://github.com/vatsakash/ShadowPay)
 - 📋 **Product Proposal Document**: [PROPOSAL.md](./PROPOSAL.md)
 - 📖 **Usage Manual & Walkthrough**: [docs/USAGE.md](./docs/USAGE.md)
