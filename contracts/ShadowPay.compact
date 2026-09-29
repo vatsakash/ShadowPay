@@ -1,6 +1,29 @@
+// ═══════════════════════════════════════════════════════════════════════════
 // Midnight Compact Smart Contract: ShadowPay
 // Confidential Payroll & Revenue-Split Settlement Protocol
 // Language: Minokawa / Compact (Midnight Network v0.23)
+// ═══════════════════════════════════════════════════════════════════════════
+// PRIVACY MODEL SPECIFICATION:
+// 1. PUBLIC LEDGER STATE (on-chain, verifiable by any explorer/indexer):
+//    - admin_pk: Public key of the organization administrator
+//    - total_funded_budget: Public escrow deposit budget
+//    - total_allocated_amount: Cumulative verified split allocation sum
+//    - batch_hash: Cryptographic commitment root of the current payroll cycle
+//    - recipient_count & claims_count: Public proof counters
+//    - is_settled: Public settlement status flag
+//
+// 2. PRIVATE WITNESSES (client-side only, never published to ledger):
+//    - get_recipient_secret(): Private witness entropy known only to contributor
+//    - get_salary_amount(): Individual private compensation amount
+//    - get_min_committed_amount(): Contractually guaranteed minimum floor
+//    - compute_payout_nullifier(): Deterministic anti-double-claim nullifier
+//
+// 3. ZERO-KNOWLEDGE CONSTRAINTS ENFORCED:
+//    - Total Solvency: sum(salary_i) == total_funded_budget
+//    - Contractual Minimums: salary_i >= minGuaranteedFloor
+//    - Anti-Double Claim: nullifier uniqueness prevents double payouts
+//    - Deliberate disclose(): Only disclose() public parameters (budget, totals)
+// ═══════════════════════════════════════════════════════════════════════════
 pragma language_version 0.23;
 
 // Public Ledger State (Visible on Midnight Preprod Blockchain Explorer)
