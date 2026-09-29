@@ -42,6 +42,38 @@ Teams, DAOs, and freelance collectives currently have to choose between **transp
 
 ---
 
+## Screenshots & Visual Walkthrough
+
+### 1. Windows Desktop UI
+> Live Admin Settlement dashboard on Midnight Preprod with 1AM Extension connected, displaying total escrow budget, cumulative private splits, and real-time ZK proof counters:
+
+![ShadowPay Windows Desktop UI](docs/screenshots/windows_ui.png)
+
+---
+
+### 2. Mobile Responsive UI
+> Fully responsive layout optimized for mobile screens, enabling on-the-go confidential payroll management and claim verification:
+
+<p align="center">
+  <img src="docs/screenshots/mobile_responsive.png" alt="ShadowPay Mobile Responsive UI" width="380" />
+</p>
+
+---
+
+### 3. CI/CD Pipeline (Passing)
+> Automated GitHub Actions CI workflow (Node 20 & Node 22 matrix) passing 100% green alongside live Vercel production deployment checks:
+
+![GitHub Actions CI/CD Pipeline Checks](docs/screenshots/ci_cd_pipeline.png)
+
+---
+
+### 4. Automated ZK Test Suite Output (10/10 Passing)
+> Complete Vitest execution verifying Minokawa / Compact circuits, contractual floors, budget conservation, and deterministic nullifiers:
+
+![Vitest Test Suite Output](docs/screenshots/test_suite_passing.svg)
+
+---
+
 ## 1AM Browser Extension Preprod Deploy Flow
 
 ShadowPay implements the official **1AM browser extension deployment flow** (mirroring `midnight-skills-counter-dapp`):
@@ -177,7 +209,7 @@ npm test
 7. `claim_private_payout`: Contributor claims compensation using private witness secret and spends nullifier.
 8. `claim_private_payout (double claim rejection)`: Rejects duplicate claims when nullifier is already spent.
 9. `disclose_payroll_audit`: Produces selective disclosure tax certificate without leaking co-workers' figures.
-10. `BrowserDeployer`: Generates valid Midnight Preprod Hex and Bech32m addresses.
+10. `BrowserDeployer`: Targets confirmed Midnight Preprod smart contract and on-chain deployment transaction.
 
 ---
 
@@ -192,6 +224,8 @@ Automated CI/CD is configured via GitHub Actions in [`.github/workflows/ci.yml`]
 
 - **Workflow Status**: [![CI/CD Pipeline](https://github.com/vatsakash/ShadowPay/actions/workflows/ci.yml/badge.svg)](https://github.com/vatsakash/ShadowPay/actions/workflows/ci.yml)
 - **Pipeline Workflow**: [View All CI Runs](https://github.com/vatsakash/ShadowPay/actions/workflows/ci.yml)
+
+![GitHub Actions CI/CD Pipeline Passing](docs/screenshots/ci_cd_pipeline.png)
 
 ---
 
