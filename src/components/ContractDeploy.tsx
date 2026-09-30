@@ -82,10 +82,13 @@ export const ContractDeploy: React.FC<ContractDeployProps> = ({
     checkLiveIndexer();
   }, []);
 
+  const [deployMode, setDeployMode] = useState<'live' | 'simulation'>('live');
+
   const handleStartDeployment = async () => {
     setIsDeploying(true);
     setDeploymentResult(null);
     setErrorMessage(null);
+    setDeployMode('live');
 
     try {
       // Explicitly enforce preprod network ID before starting deploy flow
@@ -100,6 +103,27 @@ export const ContractDeploy: React.FC<ContractDeployProps> = ({
     } catch (err: unknown) {
       console.error('Deployment error:', err);
       setErrorMessage(err instanceof Error ? err.message : 'Contract deployment encountered an issue');
+    } finally {
+      setIsDeploying(false);
+    }
+  };
+
+  const handleSimulatedPreview = async () => {
+    setIsDeploying(true);
+    setDeploymentResult(null);
+    setErrorMessage(null);
+    setDeployMode('simulation');
+
+    try {
+      setNetworkId('preprod');
+      const result = await BrowserDeployer.simulateDeployPreview((steps) => {
+        setDeploymentSteps(steps);
+      });
+
+      setDeploymentResult(result);
+      onDeploymentSuccess();
+    } catch (err: unknown) {
+      setErrorMessage(err instanceof Error ? err.message : 'Sandbox preview encountered an issue');
     } finally {
       setIsDeploying(false);
     }
@@ -214,29 +238,56 @@ export const ContractDeploy: React.FC<ContractDeployProps> = ({
             </p>
           </div>
 
-          <button
-            onClick={handleStartDeployment}
-            disabled={isDeploying}
-            className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-6 py-3 text-xs font-bold text-slate-950 shadow-lg shadow-cyan-500/20 hover:from-cyan-400 hover:to-blue-500 transition-all disabled:opacity-50 shrink-0"
-          >
-            {isDeploying ? (
-              <>
-                <RefreshCw className="h-4 w-4 animate-spin" />
-                <span>Deploying via 1AM Preprod...</span>
-              </>
-            ) : (
-              <>
-                <Sparkles className="h-4 w-4" />
-                <span>Deploy Contract Now</span>
-              </>
-            )}
-          </button>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 shrink-0">
+            <button
+              onClick={handleStartDeployment}
+              disabled={isDeploying}
+              className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-5 py-3 text-xs font-bold text-slate-950 shadow-lg shadow-cyan-500/20 hover:from-cyan-400 hover:to-blue-500 transition-all disabled:opacity-50"
+            >
+              {isDeploying && deployMode === 'live' ? (
+                <>
+                  <RefreshCw className="h-4 w-4 animate-spin" />
+                  <span>Deploying via 1AM...</span>
+                </>
+              ) : (
+                <>
+                  <Rocket className="h-4 w-4" />
+                  <span>Deploy via 1AM (Live Preprod)</span>
+                </>
+              )}
+            </button>
+
+            <button
+              onClick={handleSimulatedPreview}
+              disabled={isDeploying}
+              className="flex items-center justify-center gap-2 rounded-xl bg-slate-900 border border-slate-700/80 hover:border-cyan-500/40 px-4 py-3 text-xs font-semibold text-slate-300 hover:text-white transition-all disabled:opacity-50"
+            >
+              {isDeploying && deployMode === 'simulation' ? (
+                <>
+                  <RefreshCw className="h-4 w-4 animate-spin" />
+                  <span>Simulating Preview...</span>
+                </>
+              ) : (
+                <>
+                  <Cpu className="h-4 w-4 text-cyan-400" />
+                  <span>Sandbox Preview (Offline)</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
 
         {/* Step-by-Step Progress */}
         {deploymentSteps.length > 0 && (
           <div className="rounded-xl bg-slate-950/80 border border-slate-800 p-5 space-y-3 font-mono text-xs">
-            <div className="text-slate-400 font-sans font-semibold text-xs mb-2">1AM Deployment Pipeline:</div>
+            <div className="flex items-center justify-between text-slate-400 font-sans font-semibold text-xs mb-2">
+              <span>{deployMode === 'live' ? '1AM On-Chain Pipeline:' : 'Client Sandbox Pipeline:'}</span>
+              <span className={`text-[10px] px-2 py-0.5 rounded font-mono ${
+                deployMode === 'live' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/30' : 'bg-amber-500/10 text-amber-400 border border-amber-500/30'
+              }`}>
+                {deployMode === 'live' ? 'LIVE PREPROD TARGET' : 'SANDBOX SIMULATOR'}
+              </span>
+            </div>
             {deploymentSteps.map((step) => (
               <div key={step.step} className="flex items-start gap-3">
                 <div className="mt-0.5">

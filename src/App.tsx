@@ -106,6 +106,41 @@ export default function App() {
         onOpenLogsModal={() => setIsLogsModalOpen(true)}
       />
 
+      {/* Mode Status Banner */}
+      {walletState.isConnected ? (
+        <div className="bg-emerald-950/40 border-b border-emerald-500/20 px-4 py-2 text-xs text-emerald-300">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span className="font-semibold">Live Midnight Preprod Connected:</span>
+              <span className="font-mono text-emerald-200">{walletState.address}</span>
+              <span className="hidden sm:inline text-emerald-400/80">• Balance: {walletState.balance.toLocaleString()} tNIGHT</span>
+            </div>
+            <span className="hidden sm:inline font-mono text-[10px] text-emerald-400 uppercase tracking-wider bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+              Network ID: preprod
+            </span>
+          </div>
+        </div>
+      ) : (
+        <div className="bg-amber-950/40 border-b border-amber-500/20 px-4 py-2 text-xs text-amber-300">
+          <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-amber-400"></span>
+              <span className="font-semibold">Demo Simulator Mode:</span>
+              <span className="text-amber-200/90 text-[11px] sm:text-xs">
+                Running client-side zero-knowledge simulation. Connect 1AM Browser Wallet for live Midnight Preprod settlement.
+              </span>
+            </div>
+            <button
+              onClick={handleConnectWallet}
+              className="underline hover:text-white font-semibold text-amber-300 shrink-0 text-xs"
+            >
+              Connect 1AM
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-8 sm:px-6">
         {activeTab === 'admin' && (

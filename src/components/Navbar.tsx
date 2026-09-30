@@ -48,6 +48,17 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span className="rounded-full bg-cyan-500/10 border border-cyan-500/30 px-2 py-0.5 text-[10px] font-semibold text-cyan-300 uppercase tracking-wider">
                 Preprod
               </span>
+              {walletState.isConnected ? (
+                <span className="rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-semibold text-emerald-400 uppercase tracking-wider flex items-center gap-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                  Live On-Chain
+                </span>
+              ) : (
+                <span className="rounded-full bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 text-[10px] font-semibold text-amber-300 uppercase tracking-wider flex items-center gap-1" title="Client sandbox simulation mode. Connect 1AM wallet for live Midnight Preprod settlement.">
+                  <span className="h-1.5 w-1.5 rounded-full bg-amber-400"></span>
+                  Demo Simulator
+                </span>
+              )}
             </div>
             <p className="text-[11px] text-slate-400 font-medium hidden sm:block">
               Confidential Payroll & Revenue-Split Settlement on Midnight

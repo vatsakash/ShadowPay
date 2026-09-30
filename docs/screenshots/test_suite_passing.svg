@@ -1,35 +1,36 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 460" width="100%" height="100%">
-  <rect width="850" height="460" rx="12" fill="#0b0f19" stroke="#1e293b" stroke-width="2"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 480" width="100%" height="100%">
+  <rect width="850" height="480" rx="12" fill="#0b0f19" stroke="#1e293b" stroke-width="2"/>
   <rect x="20" y="20" width="810" height="40" rx="8" fill="#131b2e"/>
   <circle cx="45" cy="40" r="6" fill="#ef4444"/>
   <circle cx="65" cy="40" r="6" fill="#f59e0b"/>
   <circle cx="85" cy="40" r="6" fill="#10b981"/>
-  <text x="110" y="45" fill="#94a3b8" font-family="monospace" font-size="13">vitest run (Compact Smart Contract Verification &amp; ZK Privacy Suite)</text>
+  <text x="110" y="45" fill="#94a3b8" font-family="monospace" font-size="13">vitest run (Compact Smart Contract Circuits &amp; ZK Privacy Suite)</text>
   
-  <!-- Suite 1: Direct Contract Tests -->
-  <text x="35" y="85" fill="#10b981" font-family="monospace" font-size="13" font-weight="bold">✓ tests/ShadowPayContract.test.ts (10 tests) [DIRECT COMPACT CONTRACT]</text>
-  <text x="55" y="105" fill="#e2e8f0" font-family="monospace" font-size="11">✓ Verifies Compact language pragma version is 0.23</text>
-  <text x="55" y="123" fill="#e2e8f0" font-family="monospace" font-size="11">✓ CRITICAL PRIVACY: Contract NEVER calls disclose(salaryAmount)</text>
-  <text x="55" y="141" fill="#e2e8f0" font-family="monospace" font-size="11">✓ Verifies persistent spent_nullifiers Map for anti-double-claim replay protection</text>
-  <text x="55" y="159" fill="#e2e8f0" font-family="monospace" font-size="11">✓ Verifies on-chain commitments Map for verified allocation registry</text>
-  <text x="55" y="177" fill="#e2e8f0" font-family="monospace" font-size="11">✓ Verifies all 5 core Compact circuits exported with exact signatures</text>
-  <text x="55" y="195" fill="#e2e8f0" font-family="monospace" font-size="11">✓ Verifies contractual minimum floor constraint enforced in commit_recipient_split</text>
-  <text x="55" y="213" fill="#e2e8f0" font-family="monospace" font-size="11">✓ Verifies batch solvency constraint enforced in finalize_settlement_batch</text>
-  <text x="55" y="231" fill="#e2e8f0" font-family="monospace" font-size="11">✓ Verifies auditor authorization access control in disclose_payroll_audit</text>
-  <text x="55" y="249" fill="#e2e8f0" font-family="monospace" font-size="11">✓ Verifies auto-generated managed bindings strictly align with Compact contract</text>
-  <text x="55" y="267" fill="#e2e8f0" font-family="monospace" font-size="11">✓ Verifies valid MIT LICENSE exists in repository root</text>
+  <!-- Suite 1: Direct Contract Circuit Execution & AST Tests -->
+  <text x="35" y="85" fill="#10b981" font-family="monospace" font-size="13" font-weight="bold">✓ tests/ShadowPayContract.test.ts (15 tests) [COMPACT CIRCUITS &amp; RUNTIME]</text>
+  <text x="55" y="105" fill="#e2e8f0" font-family="monospace" font-size="11">✓ Part 1: Source AST, pragma 0.23 &amp; CRITICAL INVARIANT: 0 disclose(salaryAmount)</text>
+  <text x="55" y="123" fill="#e2e8f0" font-family="monospace" font-size="11">✓ Part 1: Persistent spent_nullifiers Map &amp; commitments Map declarations</text>
+  <text x="55" y="141" fill="#e2e8f0" font-family="monospace" font-size="11">✓ Part 1: Auto-generated managed bindings alignment &amp; MIT License check</text>
+  <text x="55" y="159" fill="#38bdf8" font-family="monospace" font-size="11">✓ Part 2: Circuit 1: deposit_payroll_budget initializes on-chain escrow state</text>
+  <text x="55" y="177" fill="#38bdf8" font-family="monospace" font-size="11">✓ Part 2: Circuit 2: commit_recipient_split accepts split with private witness</text>
+  <text x="55" y="195" fill="#38bdf8" font-family="monospace" font-size="11">✓ Part 2: Circuit 2 Constraint: Rejects split when salary &lt; minimum floor</text>
+  <text x="55" y="213" fill="#38bdf8" font-family="monospace" font-size="11">✓ Part 2: Circuit 3: finalize_settlement_batch verifies exact solvency match</text>
+  <text x="55" y="231" fill="#38bdf8" font-family="monospace" font-size="11">✓ Part 2: Circuit 3 Constraint: Rejects settlement when total allocated != budget</text>
+  <text x="55" y="249" fill="#38bdf8" font-family="monospace" font-size="11">✓ Part 2: Circuit 4: claim_private_payout records nullifier in persistent Map</text>
+  <text x="55" y="267" fill="#38bdf8" font-family="monospace" font-size="11">✓ Part 2: Circuit 4 Replay: Rejects double-claim when nullifier is already spent</text>
+  <text x="55" y="285" fill="#38bdf8" font-family="monospace" font-size="11">✓ Part 2: Circuit 5: disclose_payroll_audit authenticates auditor &amp; rejects impostor</text>
 
   <!-- Suite 2: Simulation & Prover Engine Tests -->
-  <text x="35" y="300" fill="#10b981" font-family="monospace" font-size="13" font-weight="bold">✓ tests/ShadowPay.test.ts (10 tests) [CLIENT PROVER &amp; SIMULATOR]</text>
-  <text x="55" y="320" fill="#cbd5e1" font-family="monospace" font-size="11">✓ Test 1-4: deposit_payroll_budget &amp; split conservation with floor enforcement</text>
-  <text x="55" y="338" fill="#cbd5e1" font-family="monospace" font-size="11">✓ Test 5-6: finalize_settlement_batch exact solvency proof &amp; mismatch rejection</text>
-  <text x="55" y="356" fill="#cbd5e1" font-family="monospace" font-size="11">✓ Test 7-8: claim_private_payout entitlement proof &amp; spent nullifier rejection</text>
-  <text x="55" y="374" fill="#cbd5e1" font-family="monospace" font-size="11">✓ Test 9: disclose_payroll_audit selective disclosure without co-worker leakage</text>
-  <text x="55" y="392" fill="#cbd5e1" font-family="monospace" font-size="11">✓ Test 10: browser deployer targets confirmed Midnight Preprod smart contract &amp; tx</text>
+  <text x="35" y="320" fill="#10b981" font-family="monospace" font-size="13" font-weight="bold">✓ tests/ShadowPay.test.ts (10 tests) [CLIENT PROVER &amp; SIMULATOR]</text>
+  <text x="55" y="340" fill="#cbd5e1" font-family="monospace" font-size="11">✓ Test 1-4: deposit_payroll_budget &amp; split conservation with floor enforcement</text>
+  <text x="55" y="358" fill="#cbd5e1" font-family="monospace" font-size="11">✓ Test 5-6: finalize_settlement_batch exact solvency proof &amp; mismatch rejection</text>
+  <text x="55" y="376" fill="#cbd5e1" font-family="monospace" font-size="11">✓ Test 7-8: claim_private_payout entitlement proof &amp; spent nullifier rejection</text>
+  <text x="55" y="394" fill="#cbd5e1" font-family="monospace" font-size="11">✓ Test 9: disclose_payroll_audit selective disclosure without co-worker leakage</text>
+  <text x="55" y="412" fill="#cbd5e1" font-family="monospace" font-size="11">✓ Test 10: browser deployer fails honestly without wallet &amp; supports sandbox</text>
 
-  <rect x="635" y="75" width="195" height="105" rx="8" fill="#10b981" fill-opacity="0.1" stroke="#10b981" stroke-width="1.5"/>
+  <rect x="635" y="75" width="195" height="110" rx="8" fill="#10b981" fill-opacity="0.1" stroke="#10b981" stroke-width="1.5"/>
   <text x="655" y="105" fill="#10b981" font-family="monospace" font-size="14" font-weight="bold">ALL TESTS PASSED</text>
-  <text x="655" y="128" fill="#cbd5e1" font-family="monospace" font-size="12">20 / 20 Passing (2 suites)</text>
-  <text x="655" y="148" fill="#38bdf8" font-family="monospace" font-size="11">10 Compact Contract</text>
+  <text x="655" y="128" fill="#cbd5e1" font-family="monospace" font-size="12">25 / 25 Passing (2 suites)</text>
+  <text x="655" y="148" fill="#38bdf8" font-family="monospace" font-size="11">15 Compact Circuits</text>
   <text x="655" y="165" fill="#94a3b8" font-family="monospace" font-size="10">10 Prover / DApp Tests</text>
 </svg>

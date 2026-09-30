@@ -166,13 +166,19 @@ describe('ShadowPay Compact Smart Contract & ZK Privacy Test Suite', () => {
     expect(globalAudit.individualSalariesExposed).toBe(false);
   });
 
-  it('Test 10: browser deployer targets confirmed Midnight Preprod smart contract and on-chain deployment transaction', async () => {
+  it('Test 10: browser deployer fails honestly without wallet extension and supports sandbox preview', async () => {
     const admin = 'mn_addr_preprod1q9x74a87c0v28e53l90qw82k49z6m31f82y01';
-    const deployInfo = await BrowserDeployer.deployToPreprod(admin);
 
-    expect(deployInfo.network).toBe('preprod');
-    expect(deployInfo.hexAddress).toBe(ShadowPayEngine.DEFAULT_PREPROD_HEX);
-    expect(deployInfo.bech32mAddress).toBe(ShadowPayEngine.DEFAULT_PREPROD_BECH32M);
-    expect(deployInfo.txHash).toBe(ShadowPayEngine.DEFAULT_DEPLOY_TX);
-  }, 15000);
+    // 1. Without 1AM wallet in Node environment, deployToPreprod MUST fail honestly
+    await expect(
+      BrowserDeployer.deployToPreprod(admin)
+    ).rejects.toThrow('1AM Wallet not detected');
+
+    // 2. Explicit sandbox preview targets confirmed Midnight Preprod reference contract
+    const sandboxInfo = await BrowserDeployer.simulateDeployPreview();
+    expect(sandboxInfo.network).toBe('preprod');
+    expect(sandboxInfo.hexAddress).toBe(ShadowPayEngine.DEFAULT_PREPROD_HEX);
+    expect(sandboxInfo.bech32mAddress).toBe(ShadowPayEngine.DEFAULT_PREPROD_BECH32M);
+    expect(sandboxInfo.txHash).toBe(ShadowPayEngine.DEFAULT_DEPLOY_TX);
+  });
 });

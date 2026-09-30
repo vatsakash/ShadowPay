@@ -103,8 +103,8 @@ To avoid this, organizations retreat to centralized off-chain spreadsheets and p
 
 ---
 
-### 4. Automated ZK Test Suite Output (20/20 Passing across 2 Suites)
-> Complete Vitest execution verifying both the direct Compact contract (AST, constraints, zero-disclosure invariant) and the client ZK prover engine:
+### 4. Automated ZK Test Suite Output (25/25 Passing across 2 Suites)
+> Complete Vitest execution verifying both the direct Compact contract circuit execution (state transitions, constraints, zero-disclosure invariant) and the client ZK prover engine:
 
 ![Vitest Test Suite Output](docs/screenshots/test_suite_passing.svg)
 
@@ -143,7 +143,7 @@ npm install
 # 3. Run TypeScript typecheck and linting
 npm run lint
 
-# 4. Run automated unit and ZK circuit tests (all 20 tests)
+# 4. Run automated unit and ZK circuit tests (all 25 tests)
 npm test
 
 # 5. Build production web bundle
@@ -158,26 +158,31 @@ npm run dev
 ## Run Tests
 
 ShadowPay includes an extensive two-tier automated test suite:
-1. [`tests/ShadowPayContract.test.ts`](./tests/ShadowPayContract.test.ts): **Direct Midnight Compact Smart Contract Verification** (asserts zero salary disclosure, on-chain nullifier maps, circuit signatures, pragma, and witness bindings).
-2. [`tests/ShadowPay.test.ts`](./tests/ShadowPay.test.ts): **Client Prover Engine & DApp Integration Suite** (verifies client-side witness generation, budget conservation, minimum floor violations, anti-double-claim nullifiers, selective disclosure, and Preprod deployer targets).
+1. [`tests/ShadowPayContract.test.ts`](./tests/ShadowPayContract.test.ts): **Midnight Compact Contract Circuit Execution & Specification Tests** (15 tests: directly executes circuit logic, state transitions, persistent nullifier maps, witness evaluation, and asserts zero salary disclosure).
+2. [`tests/ShadowPay.test.ts`](./tests/ShadowPay.test.ts): **Client Prover Engine & DApp Integration Suite** (10 tests: verifies client-side witness generation, budget conservation, minimum floor violations, anti-double-claim nullifiers, selective disclosure, and honest deployer behavior without wallet).
 
 ```bash
 npm test
 ```
 
-### Test Suite Execution Output (20/20 Passing):
+### Test Suite Execution Output (25/25 Passing):
 ```
- ✓ tests/ShadowPayContract.test.ts (10 tests)
-   ✓ Verifies Compact language pragma version is 0.23
-   ✓ CRITICAL PRIVACY INVARIANT: Contract NEVER calls disclose(salaryAmount)
-   ✓ Verifies on-chain persistent spent_nullifiers Map for anti-double-claim protection
-   ✓ Verifies on-chain commitments Map for verified allocation registry
-   ✓ Verifies all 5 core Compact circuits are exported with exact signatures
-   ✓ Verifies contractual minimum floor constraint is enforced inside commit_recipient_split
-   ✓ Verifies batch solvency constraint is enforced in finalize_settlement_batch
-   ✓ Verifies auditor authorization access control in disclose_payroll_audit
-   ✓ Verifies auto-generated managed bindings strictly align with Compact contract
-   ✓ Verifies valid MIT LICENSE exists in repository root
+ ✓ tests/ShadowPayContract.test.ts (15 tests)
+   ✓ Part 1: Verifies Compact language pragma version is 0.23
+   ✓ Part 1: CRITICAL PRIVACY INVARIANT: Contract NEVER calls disclose(salaryAmount)
+   ✓ Part 1: Verifies persistent on-chain spent_nullifiers Map in Compact ledger
+   ✓ Part 1: Verifies on-chain commitments Map for verified allocation registry
+   ✓ Part 1: Verifies all 5 core Compact circuits are exported with exact signatures
+   ✓ Part 1: Verifies managed TypeScript bindings match Compact exports and valid LICENSE exists
+   ✓ Part 2: Circuit 1: deposit_payroll_budget initializes on-chain escrow budget & registry
+   ✓ Part 2: Circuit 2: commit_recipient_split accepts shielded split without salary disclosure
+   ✓ Part 2: Circuit 2 Constraint: Rejects split when salary is below contractual minimum floor
+   ✓ Part 2: Circuit 3: finalize_settlement_batch verifies total solvency and locks batch
+   ✓ Part 2: Circuit 3 Constraint: Rejects settlement when total allocated does not equal budget
+   ✓ Part 2: Circuit 4: claim_private_payout unlocks private payout and records spent nullifier
+   ✓ Part 2: Circuit 4 Replay Protection: Rejects double-claim when nullifier is already spent
+   ✓ Part 2: Circuit 5: disclose_payroll_audit authenticates auditor and returns verified proof
+   ✓ Part 2: Circuit 5 Access Control: Rejects unauthorized audit key
 
  ✓ tests/ShadowPay.test.ts (10 tests)
    ✓ Test 1: deposit_payroll_budget initializes public escrow budget and batch hash
@@ -189,11 +194,11 @@ npm test
    ✓ Test 7: claim_private_payout proves witness entitlement and emits deterministic nullifier
    ✓ Test 8: claim_private_payout rejects double-claim when nullifier is already spent
    ✓ Test 9: disclose_payroll_audit generates selective disclosure tax receipt without leaking co-workers
-   ✓ Test 10: browser deployer targets confirmed Midnight Preprod smart contract and on-chain deployment transaction
+   ✓ Test 10: browser deployer fails honestly without wallet extension and supports sandbox preview
 
  Test Files  2 passed (2)
-      Tests  20 passed (20)
-   Duration  4.89s
+      Tests  25 passed (25)
+   Duration  4.97s
 ```
 
 ![Vitest ZK Privacy Test Suite](docs/screenshots/test_suite_passing.svg)
